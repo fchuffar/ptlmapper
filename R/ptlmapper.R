@@ -283,7 +283,7 @@ LIGHTWEIGHT=FALSE
     }
 
     # Wilks score for our genodata
-    if (NEED_TO_COMPUTE_MDS_AND_CAN, SHOW_SCAN_PROGRESSION=TRUE) {      
+    if (NEED_TO_COMPUTE_MDS_AND_CAN & SHOW_SCAN_PROGRESSION==TRUE) {      
       mds = cmdscale(pheno_KD,nb_dim,eig=TRUE)
       data = data.frame(mds$points)
       foo = apply(t(1:length(genodata)), 2, function(i) {
