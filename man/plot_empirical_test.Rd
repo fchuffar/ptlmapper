@@ -4,15 +4,13 @@
 \alias{plot_empirical_test}
 \title{A Function That Plots Empirical P-Values.}
 \usage{
-plot_empirical_test(ptl_mapping_result, main = "", type = "raw",
-  errs = c(0.05, 0.01, 0.005))
+plot_empirical_test(ptl_mapping_result, main = "", errs = c(0.05, 0.01,
+  0.005))
 }
 \arguments{
 \item{ptl_mapping_result}{...}
 
 \item{main}{...}
-
-\item{type}{...}
 
 \item{errs}{...}
 }

@@ -5,11 +5,10 @@
 \title{A Function That Maps PTLs.}
 \usage{
 ptl_mapping(genodata, cells, bckg, nb_perm = 0, bin_width = NULL,
-  ptl_mapping_filename = NULL, types = c("raw"), nb_dim = NULL,
-  errs = c(0.05, 0.01, 0.005), minimal_proportion = 0.1,
-  USE_BOT_FOR_EXPLORATION = FALSE, COMPUTE_KD_MATRIX = TRUE,
-  DO_KANTO = TRUE, DO_RQTL = TRUE, DO_MMOMENTS = TRUE, nb_bin = 100,
-  nb_moments = 3, LIGHTWEIGHT = FALSE)
+  ptl_mapping_filename = NULL, nb_dim = NULL, errs = c(0.05, 0.01, 0.005),
+  minimal_proportion = 0.1, COMPUTE_KD_MATRIX = TRUE, DO_KANTO = TRUE,
+  DO_RQTL = TRUE, DO_MMOMENTS = TRUE, nb_bin = 100, nb_moments = 4,
+  LIGHTWEIGHT = FALSE)
 }
 \arguments{
 \item{genodata}{...}
@@ -24,15 +23,11 @@ ptl_mapping(genodata, cells, bckg, nb_perm = 0, bin_width = NULL,
 
 \item{ptl_mapping_filename}{...}
 
-\item{types}{...}
-
 \item{nb_dim}{...}
 
 \item{errs}{...}
 
 \item{minimal_proportion}{...}
-
-\item{USE_BOT_FOR_EXPLORATION}{...}
 
 \item{COMPUTE_KD_MATRIX}{...}
 

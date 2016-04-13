@@ -4,15 +4,12 @@
 \alias{plot_mds}
 \title{A Function That Plots MDS.}
 \usage{
-plot_mds(ptl_mapping_result, main = "", type = "raw", col = NULL,
-  mds = NULL, ...)
+plot_mds(ptl_mapping_result, main = "", col = NULL, mds = NULL, ...)
 }
 \arguments{
 \item{ptl_mapping_result}{...}
 
 \item{main}{...}
-
-\item{type}{...}
 
 \item{col}{...}
 

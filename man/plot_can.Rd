@@ -4,8 +4,7 @@
 \alias{plot_can}
 \title{A Function That Plots the Linear Disciminant Analysis.}
 \usage{
-plot_can(ptl_mapping_result, marker_names, main = "", type = "raw",
-  col = NULL)
+plot_can(ptl_mapping_result, marker_names, main = "", col = NULL)
 }
 \arguments{
 \item{ptl_mapping_result}{...}
@@ -13,8 +12,6 @@ plot_can(ptl_mapping_result, marker_names, main = "", type = "raw",
 \item{marker_names}{...}
 
 \item{main}{...}
-
-\item{type}{...}
 
 \item{col}{...}
 }

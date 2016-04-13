@@ -4,12 +4,10 @@
 \alias{get_best_markers_rptl}
 \title{A Function That Returns Best Markers Obtained in the PTL Search.}
 \usage{
-get_best_markers_rptl(ptl_mapping_result, type = "raw", chr = NULL)
+get_best_markers_rptl(ptl_mapping_result, chr = NULL)
 }
 \arguments{
 \item{ptl_mapping_result}{...}
-
-\item{type}{...}
 
 \item{chr}{...}
 }

@@ -4,15 +4,13 @@
 \alias{plot_wilks}
 \title{A Function That Plots Encapsulated Wilks Scores.}
 \usage{
-plot_wilks(ptl_mapping_result, main = "", type = "raw", pa = NULL,
-  errs = c(0.05, 0.01, 0.005), ylim = NULL, y_thres = NULL)
+plot_wilks(ptl_mapping_result, main = "", pa = NULL, errs = c(0.05, 0.01,
+  0.005), ylim = NULL, y_thres = NULL)
 }
 \arguments{
 \item{ptl_mapping_result}{...}
 
 \item{main}{...}
-
-\item{type}{...}
 
 \item{pa}{...}
 

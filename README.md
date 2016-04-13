@@ -1,5 +1,5 @@
 # ptlmapper
-Useful Genetic Tools Allowing to Discriminate Individuals by Comparing the Distribution of Their Phenotype and to map the Genetic Loci Responsible for Specific Distributions.
+Useful genetic tools allowing to discriminate individuals by comparing the distribution of their phenotype and to map the genetic loci responsible for specific distributions.
 
 ## Description
 
