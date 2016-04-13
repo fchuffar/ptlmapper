@@ -117,8 +117,8 @@ ptl_scan = function(pheno_matrix, genodata_ptl, nb_perm, nb_dim=0, SHOW_SCAN_PRO
       if (p %% perm_prog_freq == 1 & SHOW_PERM_PROG) {print(paste("permutation", p , "/", nb_perm))}
         perm_index = sample(1:nrow(genodata_ptl))
         perm_geno = genodata_ptl[perm_index,]
-        ptl_analysis = ptl_scan(pheno_matrix, perm_geno, nb_perm=0, nb_dim=nb_dim_orig, SHOW_SCAN_PROG=SHOW_SCAN_PROG, scan_prog_freq=scan_prog_freq, method=method)
-        ret = min(ptl_analysis$Ws)
+        kanto_analysis = ptl_scan(pheno_matrix, perm_geno, nb_perm=0, nb_dim=nb_dim_orig, SHOW_SCAN_PROG=SHOW_SCAN_PROG, scan_prog_freq=scan_prog_freq, method=method)
+        ret = min(kanto_analysis$Ws)
         return(ret)            
     })
   } else {
@@ -474,21 +474,19 @@ LIGHTWEIGHT=FALSE
     genodata_ptl = preprocess_genodata(genodata, bckg)
 
     if (DO_KANTO) {
-      ptl_analysis = list()
-      ptl_analysis = ptl_scan(kd_matrix, genodata_ptl, nb_perm=nb_perm, nb_dim=nb_dim, method="kanto")
+      kanto_analysis = ptl_scan(kd_matrix, genodata_ptl, nb_perm=nb_perm, nb_dim=nb_dim, method="kanto")
     } else {
-      ptl_analysis=NULL
+      kanto_analysis=NULL
     }      
     if (DO_MMOMENTS) {
-      mmoments_analysis = list()
-        mm_matrix = build_mmoments_matrix(pheno_hists, nb_moments=nb_moments)
-        mmoments_analysis = ptl_scan(mm_matrix, genodata_ptl, nb_perm=nb_perm, nb_dim=nb_dim, method="mmoment")
-        mmoments_analysis$mm_matrix = mm_matrix
+      mm_matrix = build_mmoments_matrix(pheno_hists, nb_moments=nb_moments)
+      mmoments_analysis = ptl_scan(mm_matrix, genodata_ptl, nb_perm=nb_perm, nb_dim=nb_dim, method="mmoment")
+      mmoments_analysis$mm_matrix = mm_matrix
     } else {
       mmoments_analysis=NULL
     }
   } else {
-    ptl_analysis=NULL
+    kanto_analysis=NULL
     mmoments_analysis=NULL
     genodata_ptl=NULL
   }
@@ -520,7 +518,7 @@ LIGHTWEIGHT=FALSE
     phenodata_rqtl$noise = sqrt(phenodata_rqtl$var) / phenodata_rqtl$mean
 
     if (DO_KANTO) {
-      phenodata_rqtl$mds1_k = ptl_analysis$mds$points[,1]
+      phenodata_rqtl$mds1_k = kanto_analysis$mds$points[,1]
     }
     if (DO_MMOMENTS) {
       phenodata_rqtl$acp1_mm = mmoments_analysis$mds$rotation[,1]
@@ -533,7 +531,7 @@ LIGHTWEIGHT=FALSE
   }
 
   #
-  ptl_mapping = list(genodata=genodata, genodata_ptl=genodata_ptl, pheno_hists=pheno_hists, bckg=bckg, rqtldata=rqtldata, ptl_analysis=ptl_analysis, mmoments_analysis=mmoments_analysis, kd_matrix=kd_matrix)
+  ptl_mapping = list(genodata=genodata, genodata_ptl=genodata_ptl, pheno_hists=pheno_hists, bckg=bckg, rqtldata=rqtldata, kanto_analysis=kanto_analysis, mmoments_analysis=mmoments_analysis, kd_matrix=kd_matrix)
   if (!is.null(ptl_mapping_filename)) {
     if (!file.exists(dirname(ptl_mapping_filename))) {
       dir.create(path=dirname(ptl_mapping_filename), recursive=TRUE)
@@ -595,14 +593,18 @@ plot_rqtl = function(ptl_mapping_result, main="", ylim=NULL, which_pheno=NULL) {
 #' @param ylim ...
 #' @param y_thres ...
 #' @export
-plot_wilks = function(ptl_mapping_result, main="", pa=NULL, errs = c(0.05, 0.01, 0.005), ylim=NULL, y_thres=NULL) {
+plot_wilks = function(ptl_mapping_result, main="", pa=NULL, errs = c(0.05, 0.01, 0.005), ylim=NULL, y_thres=NULL, method="kanto") {
   if (!is.null(ptl_mapping_result)) {
     axis_info = extract_axis_info(ptl_mapping_result)    
   } else {
     stop("ptl_mapping_result is NULL, can't get axis information.")
   }
   if (is.null(pa)) {
-    pa = ptl_mapping_result$ptl_analysis
+    if (method=="kanto") {
+      pa = ptl_mapping_result$kanto_analysis
+    } else {
+      pa = ptl_mapping_result$mmoments_analysis
+    }
   }
   pa$xs = axis_info$xs
   pa$chrs = axis_info$chrs
@@ -611,6 +613,7 @@ plot_wilks = function(ptl_mapping_result, main="", pa=NULL, errs = c(0.05, 0.01,
   } else {
     cur_ylim=ylim
   }
+  main = paste(main, " (", method, ")", sep="")
   plot(0,0, main=main, xlab="markers", ylab="-log10(F)", xaxt='n', col=0,
     xlim=c(min(pa$xs), max(pa$xs)), ylim=cur_ylim)
   for (chr in unique(pa$chrs)) {
@@ -661,8 +664,8 @@ plot_wilks_k = function(ptl_mapping_result, main="", ...) {
 #' @param errs ... 
 #' @export
 plot_empirical_test = function(ptl_mapping_result, main="", errs = c(0.05, 0.01, 0.005)) {
-  if (!is.null(ptl_mapping_result$ptl_analysis$perm_Ws)) {
-    pa = ptl_mapping_result$ptl_analysis
+  if (!is.null(ptl_mapping_result$kanto_analysis$perm_Ws)) {
+    pa = ptl_mapping_result$kanto_analysis
     if (!is.null(ptl_mapping_result)) {
       axis_info = extract_axis_info(ptl_mapping_result)    
     } else {
@@ -705,7 +708,7 @@ plot_mds = function(ptl_mapping_result, main="", col=NULL, mds=NULL, ...){
     col = 1
   }
   if (is.null(mds)) {
-    mds = ptl_mapping_result$ptl_analysis$mds
+    mds = ptl_mapping_result$kanto_analysis$mds
   }
   p = mds$points
   plot(p[,1], p[,2], cex = 2, pch=16, col=adjustcolor(col,alpha=0.3), main=paste("MDS", main),
@@ -722,9 +725,9 @@ plot_mds = function(ptl_mapping_result, main="", col=NULL, mds=NULL, ...){
 #' @export
 plot_can = function(ptl_mapping_result, marker_names, main="", col=NULL){
   col = na.omit(col)
-  idx = which(names(ptl_mapping_result$ptl_analysis$genodata) == marker_names)
-  can = ptl_mapping_result$ptl_analysis$cans[[idx]]
-  nb_dim_mds = ptl_mapping_result$ptl_analysis$nb_dim
+  idx = which(names(ptl_mapping_result$kanto_analysis$genodata) == marker_names)
+  can = ptl_mapping_result$kanto_analysis$cans[[idx]]
+  nb_dim_mds = ptl_mapping_result$kanto_analysis$nb_dim
   # all_col = (can$scores$allele * 2) + 2
   main = paste("CAN@", marker_names, " #dim_can=", can$ndim, " #dim_mds=", nb_dim_mds, " ", main, sep="")
   if (ncol(can$scores) == 2 ){
@@ -853,7 +856,7 @@ get_best_markers_rqtl = function(ptl_mapping_result, which_pheno) {
 #' @param chr ... 
 #' @export
 get_best_markers_rptl = function(ptl_mapping_result, chr=NULL) {
-  pa = ptl_mapping_result$ptl_analysis
+  pa = ptl_mapping_result$kanto_analysis
   if (!is.null(ptl_mapping_result)) {
     axis_info = extract_axis_info(ptl_mapping_result)    
   } else {
@@ -884,7 +887,7 @@ get_best_markers_rptl = function(ptl_mapping_result, chr=NULL) {
 #' @param marker_names ...
 #' @export
 mn_2_col = function(ptl_mapping_result, marker_names) {
-  as.numeric(ptl_mapping_result$ptl_analysis$genodata[,marker_names]) * 2 + 2
+  as.numeric(ptl_mapping_result$kanto_analysis$genodata[,marker_names]) * 2 + 2
 }
 
 
@@ -911,11 +914,11 @@ mn_2_col = function(ptl_mapping_result, marker_names) {
 
 # plot_dim_scan = function(ptl_mapping_result, main="") {
 #   main=paste("CAN #dim scan", main)
-#   if (!is.null(ptl_mapping_result$ptl_analysis$eig_to_scan)) {
-#     pa = ptl_mapping_result$ptl_analysis
+#   if (!is.null(ptl_mapping_result$kanto_analysis$eig_to_scan)) {
+#     pa = ptl_mapping_result$kanto_analysis
 #     z = pa$dim_scan_zscores
 #     plot(pa$eig_to_scan, z, type="b", main=main, xlab="#dim", ylab="z-score")
-#     abline(v=ptl_mapping_result$ptl_analysis$nb_dim, lty=2, col=2)
+#     abline(v=ptl_mapping_result$kanto_analysis$nb_dim, lty=2, col=2)
 #   } else {
 #     print("WARNING! CAN dimension have not been scanned." )
 #   }

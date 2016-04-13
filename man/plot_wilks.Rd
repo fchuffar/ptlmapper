@@ -5,7 +5,7 @@
 \title{A Function That Plots Encapsulated Wilks Scores.}
 \usage{
 plot_wilks(ptl_mapping_result, main = "", pa = NULL, errs = c(0.05, 0.01,
-  0.005), ylim = NULL, y_thres = NULL)
+  0.005), ylim = NULL, y_thres = NULL, method = "kanto")
 }
 \arguments{
 \item{ptl_mapping_result}{...}
