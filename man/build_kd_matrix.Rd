@@ -10,6 +10,6 @@ build_kd_matrix(hists)
 \item{hists}{A list of histograms.}
 }
 \description{
-This function builds Kantorivitch distance matrix from a list of histograms  with all the same `breaks` value.
+This function builds Kantorivitch distance matrix from a list of histograms with all the same `breaks` value.
 }
 

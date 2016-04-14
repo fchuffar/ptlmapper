@@ -2,48 +2,53 @@
 % Please edit documentation in R/ptlmapper.R
 \name{ptl_mapping}
 \alias{ptl_mapping}
-\title{A Function That Maps PTLs.}
+\title{A Workflow That Maps PTLs, QTLs, Returns involved Objects, Embed Caching Fetures.}
 \usage{
-ptl_mapping(genodata, cells, bckg, nb_perm = 0, bin_width = NULL,
-  ptl_mapping_filename = NULL, nb_dim = NULL, errs = c(0.05, 0.01, 0.005),
-  minimal_proportion = 0.1, COMPUTE_KD_MATRIX = TRUE, DO_KANTO = TRUE,
-  DO_RQTL = TRUE, DO_MMOMENTS = TRUE, nb_bin = 100, nb_moments = 4,
-  LIGHTWEIGHT = FALSE)
+ptl_mapping(genodata, cells, bckg, nb_perm = 20, bin_width = NULL,
+  nb_dim = NULL, errs = 0.05, nb_bin = 100, nb_moments = 4,
+  minimal_proportion = 0.1, ptl_mapping_filename = NULL,
+  COMPUTE_KD_MATRIX = TRUE, COMPUTE_MM_MATRIX = TRUE, DO_KANTO = TRUE,
+  DO_MMOMENTS = TRUE, DO_RQTL = TRUE, CLEAN_OBJECT = FALSE)
 }
 \arguments{
-\item{genodata}{...}
+\item{genodata}{A matrix describing the genotype of individuals.}
 
-\item{cells}{...}
+\item{cells}{A list of vector of integer (single cell values).}
 
-\item{bckg}{...}
+\item{bckg}{Vector of character describing the individuals as they are describe in genodata.}
 
-\item{nb_perm}{...}
+\item{nb_perm}{An integer that specifies the number of permuation to do.}
 
-\item{bin_width}{...}
+\item{bin_width}{An integer specifying the width of the bin to use.}
 
-\item{ptl_mapping_filename}{...}
+\item{nb_dim}{An integer that specifies the number of dimension of the MDS space to explore.}
 
-\item{nb_dim}{...}
+\item{errs}{A vector of integer (error) that will be used to compute threshold from the permutation test.}
 
-\item{errs}{...}
+\item{nb_bin}{An integer specifying the number of to use.}
 
-\item{minimal_proportion}{...}
+\item{nb_moments}{An integer specifying the number of moments to compute.}
 
-\item{COMPUTE_KD_MATRIX}{...}
+\item{minimal_proportion}{A numeric specifying the minimal proportion of each parental allele under which a marker is discard from the analysis.}
 
-\item{DO_KANTO}{...}
+\item{ptl_mapping_filename}{A character string that specifies the file to save the `ptl_mapping` results.}
 
-\item{DO_RQTL}{...}
+\item{COMPUTE_KD_MATRIX}{A boolean that specifies if `kd_matrix` needs to be computed.}
 
-\item{DO_MMOMENTS}{...}
+\item{COMPUTE_MM_MATRIX}{A boolean that specifies if `mm_matrix` needs to be computed.}
 
-\item{nb_bin}{...}
+\item{DO_KANTO}{A boolean that specifies if  `ptl_scan` with method="kanto" needs to be performed.}
 
-\item{nb_moments}{...}
+\item{DO_MMOMENTS}{A boolean that specifies if `ptl_scan` with method="mmoment" needs to be performed.}
 
-\item{LIGHTWEIGHT}{...}
+\item{DO_RQTL}{A boolean that specifies if `rqtl_launch` needs to be called.}
+
+\item{CLEAN_OBJECT}{A boolean that specifies if `ptl_mapping` results needs to be cleaned.}
 }
 \description{
-This function maps PTLs.
+This function is a workflow that encapsulated many functions of the R package `ptlmapper`. 
+It aggregates parameter values, inputs and outputs of the call to the R package `ptlmapper` function.
+The resulting data structure could be cache on the file system. 
+It is useful to massivelly save multiple call to `plt_scan` and `rqtl_launch` function, for example in a complexe design.
 }
 

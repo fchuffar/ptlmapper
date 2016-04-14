@@ -7,9 +7,9 @@
 build_mmoments_matrix(hists, nb_moments = 4)
 }
 \arguments{
-\item{nb_moments}{An integer specifying the number of moments to compute.}
+\item{hists}{A list of histograms.}
 
-\item{hist}{A list of histograms.}
+\item{nb_moments}{An integer specifying the number of moments to compute.}
 }
 \description{
 This function builds multivariate moment matrix from a list of histograms.

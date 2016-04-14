@@ -7,11 +7,14 @@
 zscore(dWs, p = 0.95)
 }
 \arguments{
-\item{dWs}{...}
+\item{dWs}{A vector of numeric.}
 
-\item{p}{...}
+\item{p}{A numeric that specifies the quantile considered a noise.}
+}
+\value{
+the z-score
 }
 \description{
-This function computes z-score.
+This function returns z-score of serie.
 }
 

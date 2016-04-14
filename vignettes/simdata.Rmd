@@ -253,4 +253,6 @@ plot_empirical_test(ptl_mapping_result,main=main)
 ```
 
 
-## Aknowledgements
+## Acknowlegment
+
+We are grateful to the Pole Scientifique de Modelisation Numerique (Lyon, France) and the Grid'5000 experimental testbed (www.grid5000.fr) for computer resource, and the Centre Blaise Pascal of ENS de Lyon for housing the code on a forge. This work was supported by the European Research Council under the European Union's Seventh Framework Programme FP7/2007-2013 [grant SiGHT number 281359].

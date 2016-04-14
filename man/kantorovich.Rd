@@ -4,22 +4,53 @@
 \alias{kantorovich}
 \title{A Function That Computes Kantorovich Distance.}
 \usage{
-kantorovich(x, y, nbreaks = 1000, lims = NULL, h1 = NULL, h2 = NULL)
+kantorovich(x, y, nbreaks = 100, lims = NULL, h1 = NULL, h2 = NULL)
 }
 \arguments{
-\item{x}{...}
+\item{x}{A vector of numerics.}
 
-\item{y}{...}
+\item{y}{A vector of numerics.}
 
-\item{nbreaks}{...}
+\item{nbreaks}{The number of breaks used to build histograms.}
 
-\item{lims}{...}
+\item{lims}{vector of numerics of length 2 that specifies the range on which the histograms need to be built.}
 
-\item{h1}{...}
+\item{h1}{An histogram.}
 
-\item{h2}{...}
+\item{h2}{An histogram with the same breaks value as h1.}
+}
+\value{
+The kantorovich distance between two samples.
 }
 \description{
-This function computes Kantorovich distance.
+This function computes Kantorovich distance betwenn two vector of numerics, or two histograms.
+}
+\examples{
+layout(matrix(1:3, 3))
+x = rnorm(100000,0,1)
+y = rnorm(100000,0,2)
+lims = c(min(x, y),max(x, y))
+H = hist(lims, plot = FALSE, breaks = 200);
+tmp_breaks = H$breaks
+h1 <-  hist(x, plot = FALSE, breaks = tmp_breaks);
+h2 <-  hist(y, plot = FALSE, breaks = tmp_breaks);
+diff = h1$density - h2$density
+cumdiff = cumsum(diff)
+
+plot(h1$density, type="l", main="Distributions", col=2, lwd=3, xlab="", ylab="density", xaxt="n", yaxt="n")
+lines(h2$density, type="l", col=4, lwd=3)
+legend("topright", col=c(2,4),  legend=c("P", "Q"), lwd=2)
+abline(h=0, lty=2)
+axis(2, at=0)
+
+plot(diff, type="l", main="Difference", lwd=3, xlab="", ylab="diff", xaxt="n", yaxt="n")
+abline(h=0, lty=2)
+axis(2, at=0)
+
+plot(cumdiff, type="l", main="Cumulative Sum", lwd=3, xlab="", ylab="cumsum", xaxt="n", yaxt="n")
+polygon(x= 1:length(cumdiff), y = cumdiff, col = "grey")
+lines(cumdiff, type="l", lwd=3)
+abline(h=0, lty=2)
+axis(2, at=0)
 }
 
