@@ -12,7 +12,7 @@ preprocess_phenodata_rqtl(pheno_hists, kanto_analysis = NULL,
 
 \item{kanto_analysis}{Output of `ptl_scan` function used with the method "kanto".}
 
-\item{mmoments_analysis}{Output of `ptl_scan` function used with the method "mmoment".}
+\item{mmoments_analysis}{Output of `ptl_scan` function used with the method "mmoments".}
 }
 \description{
 This function preprocesses phenotypes of individuals for R Package QTL.

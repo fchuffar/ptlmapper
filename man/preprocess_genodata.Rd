@@ -4,17 +4,15 @@
 \alias{preprocess_genodata}
 \title{A Function That Preprocesses Genotype of Individuals.}
 \usage{
-preprocess_genodata(genodata, bckg, minimal_proportion = 0.1)
+preprocess_genodata(genodata, bckg)
 }
 \arguments{
 \item{genodata}{A matrix describing the genotype of individuals.}
 
 \item{bckg}{Vector of character describing the individuals as they are describe in genodata.}
-
-\item{minimal_proportion}{A numeric specifying the minimal proportion of each parental allele under which a marker is discard from the analysis.}
 }
 \description{
 This function preprocesses genotype of individuals. 
-In geneodata, "2" stands for undetermined and is replaced by NA.
+All the allele that are describe by something else that 1 or will be replaced by NA and ignored by the analysis.
 }
 

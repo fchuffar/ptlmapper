@@ -4,26 +4,23 @@
 \alias{ptl_scan}
 \title{A Function That Scans Genome to Detect PTLs.}
 \usage{
-ptl_scan(pheno_matrix, genodata_ptl, nb_perm, nb_dim = 0,
-  SHOW_SCAN_PROG = FALSE, SHOW_PERM_PROG = TRUE, scan_prog_freq = 50,
-  perm_prog_freq = 5, method = "kanto")
+ptl_scan(pheno_matrix, genodata_ptl, nb_perm, nb_dim = 0, min_prop = 0.1,
+  SHOW_PERM_PROG = TRUE, perm_prog_freq = 5, method = "kanto")
 }
 \arguments{
-\item{genodata_ptl}{The preprocessed for ptl scanning genome.}
+\item{genodata_ptl}{The preprocessed genodata. Typically output of `preprocess_genodata` function.}
 
 \item{nb_perm}{An integer that specifies the number of permuation to do.}
 
 \item{nb_dim}{An integer that specifies the number of dimension of the MDS space to explore.}
 
-\item{method}{A character string in c("kanto", "mmoment") that specify the method to use to characterize phenotypic distribution. Default is our favourite: "kanto"!}
+\item{min_prop}{A numeric specifying the minimal proportion of each parental allele under which a marker is discard from the analysis.}
+
+\item{method}{A character string in c("kanto", "mmoments") that specify the method to use to characterize phenotypic distribution. Default is our favourite: "kanto"!}
 
 \item{kd_matrix}{The Kantorivitch distance matrix.}
 
-\item{SHOW_SCAN_PROG=FALSE}{A boolean specifying if genome scan progression need to to report on console.}
-
 \item{SHOW_PERM_PROG=TRUE}{A boolean specifying if permutation progression need to to report on console.}
-
-\item{scan_prog_freq=50}{An integer specifying the frequency of the scan progression reporting.}
 
 \item{perm_prog_freq=5}{An integer specifying the frequency of the permution progression reporting.}
 }

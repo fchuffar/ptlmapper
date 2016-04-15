@@ -1,12 +1,18 @@
 ## ------------------------------------------------------------------------
 library(ptldata)
+indiv = ptldata::indiv
+genodata = ptldata::genodata
+cells = ptldata::cells
+
+## ------------------------------------------------------------------------
+head(indiv)
 
 ## ------------------------------------------------------------------------
 err = 0.2
 nb_indiv = 80
-idx = sample(which(indiv$err==err), nb_indiv)
+idx = which(indiv$err==err)[1:nb_indiv]
 cells = cells[idx]
-indiv = indiv[idx, ]
+indiv = indiv[idx,]
 genodata = genodata[,idx]
 
 ## ----fig.height=3, fig.width=9-------------------------------------------
@@ -21,6 +27,9 @@ for (m in c("m1","m2","m3")){
   }
 }
 
+## ------------------------------------------------------------------------
+genodata[1:10, 1:7]
+
 ## ----fig.height=6, fig.width=6-------------------------------------------
 tetas = compute_teta(genodata)
 matlab::imagesc(t(as.matrix(genodata)), 
@@ -33,6 +42,9 @@ plot(density(tetas),
   xlab=paste("mean(teta)=", signif(mean(tetas),3), sep=""))
 abline(v=mean(tetas), lty=2)
 
+## ------------------------------------------------------------------------
+head(names(cells))
+
 ## ----fig.width=6, fig.height=6-------------------------------------------
 # plot_dist(ptl_mapping_result, main=main, col=col)
 library(ptlmapper)
@@ -42,67 +54,44 @@ pheno_hists = build_pheno_hists(cells, bin_width=1)
 
 ## ------------------------------------------------------------------------
 kd_matrix = build_kd_matrix(pheno_hists)
+head(kd_matrix)
 
 ## ------------------------------------------------------------------------
-mm_matrix = build_mmoments_matrix(pheno_hists)
+mm_matrix = build_mmoments_matrix(pheno_hists, nb_moment=4)
+head(mm_matrix)
 
 ## ------------------------------------------------------------------------
-bckg = names(genodata)
-genodata$chromosome = rep(1, nrow(genodata))
+bckg = names(cells)
+genodata$chromosome = 1
 genodata$position = 1:nrow(genodata)
-genodata$prob_name = paste("marker", 1:nrow(genodata), sep="_")
+genodata$prob_name = rownames(genodata)
 genodata$rec_fractions = 0.05
-
 genodata_ptl = preprocess_genodata(genodata, bckg)
 
 ## ------------------------------------------------------------------------
-kanto_analysis = ptl_scan(kd_matrix, genodata_ptl, nb_perm=3)
+kanto_analysis = ptl_scan(kd_matrix, genodata_ptl, nb_perm=3, method="kanto")
+mmoments_analysis = ptl_scan(mm_matrix, genodata_ptl, nb_perm=3, method="mmoments")
 
 ## ------------------------------------------------------------------------
-mmoments_analysis = ptl_scan(mm_matrix, genodata_ptl, nb_perm=3, method="mmoment")
+rqtl_analysis = rqtl_launch(genodata_ptl, pheno_hists, kanto_analysis, mmoments_analysis)
 
 ## ------------------------------------------------------------------------
+ptl_mapping_result = ptl_mapping(genodata_ptl, cells, bckg, nb_perm=3, bin_width=1)
 
-## ------------------------------------------------------------------------
+## ----fig.height=3, fig.width=9-------------------------------------------
+layout(matrix(1:3, 1, byrow=TRUE), respect=TRUE)
+plot_rqtl(ptl_mapping_result, which_pheno=1)
+plot_rqtl(ptl_mapping_result, which_pheno=2)
+plot_rqtl(ptl_mapping_result, which_pheno=3)
 
-## ----fig.height=6, fig.width=12------------------------------------------
-
-
-###################################################
-### code chunk number 7: simdata_pres.Rnw:553-556
-###################################################
-
-main=paste("err=", err, sep="")
-# ptl_mapping_filename = paste("cache/simdata", err, nb_perm, "ptl_mapping.Rds", sep="_")
-# genodata = g
-# cells = c
-# bckg = bckg
-# nb_perm=nb_perm
-# nb_dim=0
-# bin_width=1
-# ptl_mapping_filename=ptl_mapping_filename
-# DO_MMOMENTS=TRUE
-# errs = c(0.05, 0.01, 0.005)
-# minimal_proportion=0.1
-# COMPUTE_KD_MATRIX=TRUE
-# DO_KANTO=TRUE
-# DO_RQTL=TRUE
-# nb_moments=3
-# LIGHTWEIGHT=FALSE
-ptl_mapping_result = ptl_mapping(genodata, cells, bckg, nb_perm=3, nb_dim=0, bin_width=1, 
-# ptl_mapping_filename=ptl_mapping_filename, 
-DO_MMOMENTS=TRUE)
-
-layout(matrix(1:8, 2, byrow=TRUE), respect=TRUE)
-plot_rqtl(ptl_mapping_result, main=paste(main, dim(genodata)[1], "markers and", dim(genodata)[2], "indiviuals"), which_pheno=1)
-plot_rqtl(ptl_mapping_result, main=main, which_pheno=2)
-marker_names = rownames(get_best_markers_rptl(ptl_mapping_result))
-col = mn_2_col(ptl_mapping_result, marker_names[1])
+## ----fig.height=3, fig.width=9-------------------------------------------
+layout(matrix(1:3, 1, byrow=TRUE), respect=TRUE)
 plot_mds(ptl_mapping_result, main=main, col=col)
 plot_wilks(ptl_mapping_result, main=main, method="kanto")
-plot_wilks(ptl_mapping_result=ptl_mapping_result, pa=ptl_mapping_result$mmoments_analysis, main=paste(nb_indiv, "indiv (mm)"), method="mmoment")
 plot_can(ptl_mapping_result, marker_names[1], main=main, col=col)
-# plot_noise(ptl_mapping_result, main=main, col=col)
+
+## ----fig.height=3, fig.width=9-------------------------------------------
+layout(matrix(1:3, 1, byrow=TRUE), respect=TRUE)
+plot_wilks(ptl_mapping_result=ptl_mapping_result, pa=ptl_mapping_result$mmoments_analysis, main=paste(nb_indiv, "indiv (mm)"), method="mmoments")
 plot_dist(ptl_mapping_result, main=main, col=col)
-plot_empirical_test(ptl_mapping_result,main=main)
 

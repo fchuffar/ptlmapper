@@ -2,7 +2,7 @@
 % Please edit documentation in R/ptlmapper.R
 \name{plot_wilks_mm}
 \alias{plot_wilks_mm}
-\title{A Function That Plots Encapsulated Wilks Scores for MultiVariate Moment Approach.}
+\title{A Function That Plots Encapsulated Wilks Scores for MultiVariate Moments Approach.}
 \usage{
 plot_wilks_mm(ptl_mapping_result, main = "", ...)
 }
@@ -12,6 +12,6 @@ plot_wilks_mm(ptl_mapping_result, main = "", ...)
 \item{main}{...}
 }
 \description{
-This function plots encapsulated Wilks scores for multiVariate moment approach.
+This function plots encapsulated Wilks scores for multiVariate moments approach.
 }
 

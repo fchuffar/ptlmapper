@@ -15,6 +15,7 @@ RoxygenNote: 5.0.1
 Imports:
     candisc,
     qtl, 
+    moments,
 Suggests: knitr,
     rmarkdown,
     ptldata,

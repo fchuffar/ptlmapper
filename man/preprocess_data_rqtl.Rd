@@ -4,19 +4,17 @@
 \alias{preprocess_data_rqtl}
 \title{A Function That Preprocesses Genotypes and Phenotypes of Individuals for R Package QTL.}
 \usage{
-preprocess_data_rqtl(genodata, bckg, pheno_hists, kanto_analysis = NULL,
+preprocess_data_rqtl(genodata_ptl, pheno_hists, kanto_analysis = NULL,
   mmoments_analysis = NULL)
 }
 \arguments{
-\item{genodata}{A matrix describing the genotype of individuals.}
-
-\item{bckg}{Vector of character describing the individuals as they are describe in genodata.}
+\item{genodata_ptl}{The preprocessed genodata. Typically output of `preprocess_genodata` function.}
 
 \item{pheno_hists}{A list of object containing mean and var attribute. Typically outpout of the `build_pheno_hists` function.}
 
 \item{kanto_analysis}{Output of `ptl_scan` function used with the method "kanto".}
 
-\item{mmoments_analysis}{Output of `ptl_scan` function used with the method "mmoment".}
+\item{mmoments_analysis}{Output of `ptl_scan` function used with the method "mmoments".}
 }
 \description{
 This function preprocesses genotypes and phenotypes of individuals for R Package QTL.

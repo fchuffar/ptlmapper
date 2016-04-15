@@ -5,10 +5,10 @@
 \title{A Workflow That Maps PTLs, QTLs, Returns involved Objects, Embed Caching Fetures.}
 \usage{
 ptl_mapping(genodata, cells, bckg, nb_perm = 20, bin_width = NULL,
-  nb_dim = NULL, errs = 0.05, nb_bin = 100, nb_moments = 4,
-  minimal_proportion = 0.1, ptl_mapping_filename = NULL,
-  COMPUTE_KD_MATRIX = TRUE, COMPUTE_MM_MATRIX = TRUE, DO_KANTO = TRUE,
-  DO_MMOMENTS = TRUE, DO_RQTL = TRUE, CLEAN_OBJECT = FALSE)
+  nb_dim = 0, errs = 0.05, nb_bin = 100, nb_moments = 4,
+  min_prop = 0.1, ptl_mapping_filename = NULL, COMPUTE_KD_MATRIX = TRUE,
+  COMPUTE_MM_MATRIX = TRUE, DO_KANTO = TRUE, DO_MMOMENTS = TRUE,
+  DO_RQTL = TRUE, CLEAN_OBJECT = FALSE)
 }
 \arguments{
 \item{genodata}{A matrix describing the genotype of individuals.}
@@ -29,8 +29,6 @@ ptl_mapping(genodata, cells, bckg, nb_perm = 20, bin_width = NULL,
 
 \item{nb_moments}{An integer specifying the number of moments to compute.}
 
-\item{minimal_proportion}{A numeric specifying the minimal proportion of each parental allele under which a marker is discard from the analysis.}
-
 \item{ptl_mapping_filename}{A character string that specifies the file to save the `ptl_mapping` results.}
 
 \item{COMPUTE_KD_MATRIX}{A boolean that specifies if `kd_matrix` needs to be computed.}
@@ -39,7 +37,7 @@ ptl_mapping(genodata, cells, bckg, nb_perm = 20, bin_width = NULL,
 
 \item{DO_KANTO}{A boolean that specifies if  `ptl_scan` with method="kanto" needs to be performed.}
 
-\item{DO_MMOMENTS}{A boolean that specifies if `ptl_scan` with method="mmoment" needs to be performed.}
+\item{DO_MMOMENTS}{A boolean that specifies if `ptl_scan` with method="mmoments" needs to be performed.}
 
 \item{DO_RQTL}{A boolean that specifies if `rqtl_launch` needs to be called.}
 
@@ -49,6 +47,6 @@ ptl_mapping(genodata, cells, bckg, nb_perm = 20, bin_width = NULL,
 This function is a workflow that encapsulated many functions of the R package `ptlmapper`. 
 It aggregates parameter values, inputs and outputs of the call to the R package `ptlmapper` function.
 The resulting data structure could be cache on the file system. 
-It is useful to massivelly save multiple call to `plt_scan` and `rqtl_launch` function, for example in a complexe design.
+It is useful to massivelly save multiple call to `plt_scan` and `rqtl_launch` function, for example in a complex design.
 }
 

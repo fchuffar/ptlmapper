@@ -1,10 +1,113 @@
+#' A Function That Checks Proportion of Allele for each Marker.
+#'
+#' This function checks the proportion of allele for each marker. 
+#' It discard marker that does not repsect the minimal proportion for an allele.
+#' @param genodata A matrix describing the genotype of individuals.
+#' @param bckg Vector of character describing the individuals as they are describe in genodata.
+#' @param min_prop A numeric specifying the minimal proportion of each parental allele under which a marker is discard from the analysis.
+#' @export
+check_marker_allele_prop = function(genodata, bckg, min_prop=0.1) {
+  g = genodata[, bckg]
+  kept = apply(g[,bckg], 1, function(col) {
+    nb_ind = length(col)
+    inds = as.vector(na.omit(col))
+    u_inds = unique(inds)
+    for (i in u_inds) {
+      if (sum(inds==i)/nb_ind < min_prop | sum(inds==i)/nb_ind == 1) {
+        # print("Removing something")
+        return(FALSE)
+      }
+    }
+    return(TRUE)
+  })
+  return(g[kept, bckg])
+}
+
+#' A Function That Preprocesses Genotype of Individuals.
+#'
+#' This function preprocesses genotype of individuals. 
+#' All the allele that are describe by something else that 1 or will be replaced by NA and ignored by the analysis.
+#' @param genodata A matrix describing the genotype of individuals.
+#' @param bckg Vector of character describing the individuals as they are describe in genodata.
+#' @export
+preprocess_genodata = function(genodata, bckg) {
+  chromosome =  genodata$chromosome
+  position = genodata$position
+  prob_name = genodata$prob_name
+  rec_fractions = genodata$rec_fractions
+  g = genodata[, bckg]  
+  g[!(g==1 | g==2)] = NA
+  g = data.frame(g)
+  g$chromosome = chromosome
+  g$position = position
+  g$prob_name = prob_name
+  g$rec_fractions = rec_fractions
+  # filtering allele according to proportion in population.
+  return(g)
+}
+
+#' A Function That Preprocesses Phenotypes of Individuals for R Package QTL.
+#'
+#' This function preprocesses phenotypes of individuals for R Package QTL. 
+#' @param pheno_hists A list of object containing mean and var attribute. Typically outpout of the `build_pheno_hists` function.
+#' @param kanto_analysis Output of `ptl_scan` function used with the method "kanto".
+#' @param mmoments_analysis Output of `ptl_scan` function used with the method "mmoments". 
+#' @export
+preprocess_phenodata_rqtl = function(pheno_hists, kanto_analysis=NULL, mmoments_analysis=NULL) {
+  phenodata_rqtl = sapply(pheno_hists, function(h) {
+    c(mean=h$mean, var=h$var)
+  })
+  phenodata_rqtl = data.frame(t(phenodata_rqtl))
+  phenodata_rqtl$noise = sqrt(phenodata_rqtl$var) / phenodata_rqtl$mean
+  if (!is.null(kanto_analysis)) {
+    phenodata_rqtl$mds1_k = kanto_analysis$mds$points[,1]
+  }
+  if (!is.null(mmoments_analysis)) {
+    phenodata_rqtl$acp1_mm = mmoments_analysis$mds$rotation[,1]
+  }
+  return(phenodata_rqtl)
+}
+
+
+#' A Function That Preprocesses Genotypes and Phenotypes of Individuals for R Package QTL.
+#'
+#' This function preprocesses genotypes and phenotypes of individuals for R Package QTL. 
+#' @inheritParams preprocess_phenodata_rqtl
+#' @param genodata_ptl The preprocessed genodata. Typically output of `preprocess_genodata` function.
+#' @export
+preprocess_data_rqtl = function(genodata_ptl, pheno_hists, kanto_analysis=NULL, mmoments_analysis=NULL) {
+  bckg = names(pheno_hists)
+  phenodata_rqtl = preprocess_phenodata_rqtl(pheno_hists, kanto_analysis=kanto_analysis, mmoments_analysis=mmoments_analysis)
+  rqtl_data = list()
+  class(rqtl_data) = c("bc", "cross")
+  rqtl_data$geno = list()
+  for (chr in unique(genodata_ptl$chromosome)) {
+    chr = as.character(chr)
+    rqtl_data$geno[[chr]] = list()
+    rqtl_data$geno[[chr]]$data = t(genodata_ptl[ genodata_ptl$chromosome == chr, bckg])
+    colnames(rqtl_data$geno[[chr]]$data) = genodata_ptl[ genodata_ptl$chromosome == chr, ]$prob_name
+    rqtl_data$geno[[chr]]$map = as.list(cumsum(genodata_ptl[genodata_ptl$chromosome == chr, ]$rec_fractions * 100))
+    names(rqtl_data$geno[[chr]]$map) = genodata_ptl[genodata_ptl$chromosome == chr, ]$prob_name
+    rqtl_data$geno[[chr]]$map = unlist(rqtl_data$geno[[chr]]$map)
+    class(rqtl_data$geno[[chr]]) = "A"
+  }
+  rqtl_data$pheno = data.frame(phenodata_rqtl)
+  rqtl_data = jittermap(rqtl_data)
+  rqtl_data = calc.genoprob(rqtl_data, step=10, err=0.01)
+  rqtl_data = sim.geno(rqtl_data, step=10, n.draws=8, err=0.01)
+  return(rqtl_data)
+}
+
+
+
+
 #' A Function That Extracts Axis Information from a 'ptl_mapping' Data Structure.
 #'
 #' This function extracts axis information from a 'ptl_mapping' data structure. 
 #' @param ptl_mapping_result A `ptl_mapping` data structure.
 #' @param delta A numeric proportional to the space lets between chromosomes on the x axis.
 extract_axis_info = function(ptl_mapping_result, delta = 0.6) {
-  sub_genodata = genodata[ptl_mapping_result$genodata$prob_name %in% names(ptl_mapping_result$genodata_ptl),]
+  sub_genodata = genodata[ptl_mapping_result$genodata$prob_name %in% rownames(ptl_mapping_result$genodata_ptl),]
   chrs = sub_genodata$chromosome        
   xs = unlist(
   lapply(1:length(unique(chrs)), function(i) {
@@ -28,8 +131,11 @@ extract_axis_info = function(ptl_mapping_result, delta = 0.6) {
 #' @param rqtl_data Preprocessed genotypes (typically outpout of preprocess_data_rqtl function).
 #' @param nb_perm An integer that specifies the number of permuation to do.
 #' @param errs A vector of integer (error) that will be used to compute threshold from the permutation test.
+#' @param genodata_ptl The preprocessed genodata. Typically output of `preprocess_genodata` function.
+#' @inheritParams preprocess_phenodata_rqtl
 #' @export
-rqtl_launch = function(rqtl_data, nb_perm, errs=0.05) {
+rqtl_launch = function(genodata_ptl, pheno_hists, kanto_analysis=NULL, mmoments_analysis=NULL, nb_perm=1000, errs=0.05) {
+  rqtl_data = preprocess_data_rqtl(genodata_ptl, pheno_hists, kanto_analysis, mmoments_analysis)
   rqtl_data$scan = lapply(1:length(rqtl_data$pheno), function(i) {
     tmp_scan_output = scanone(rqtl_data, method="imp", pheno.col=i)
     nb_perm = max(nb_perm, 1000)
@@ -51,16 +157,15 @@ rqtl_launch = function(rqtl_data, nb_perm, errs=0.05) {
 #' If nb_dim>0 the canonical analysis is performed used provided `nb_dim`. In this case, keep attention to the fact that a high value of `nb_dim` introduce a lot of degree of freedom in your canonical analysis. The number of dimension `nb_dim` needs to be __substantially__ smaller than the size of your population. 
 #' The permutations batch uses `ptl_scan` function with the `nb_dim` value as the one provided by the initial ptl_scan call.
 #' @param kd_matrix The Kantorivitch distance matrix.
-#' @param genodata_ptl The preprocessed for ptl scanning genome.
+#' @param genodata_ptl The preprocessed genodata. Typically output of `preprocess_genodata` function.
 #' @param nb_perm An integer that specifies the number of permuation to do.
 #' @param nb_dim An integer that specifies the number of dimension of the MDS space to explore.
-#' @param SHOW_SCAN_PROG=FALSE A boolean specifying if genome scan progression need to to report on console.
+#' @param min_prop A numeric specifying the minimal proportion of each parental allele under which a marker is discard from the analysis.
 #' @param SHOW_PERM_PROG=TRUE A boolean specifying if permutation progression need to to report on console.
-#' @param scan_prog_freq=50 An integer specifying the frequency of the scan progression reporting.
 #' @param perm_prog_freq=5 An integer specifying the frequency of the permution progression reporting.
-#' @param method A character string in c("kanto", "mmoment") that specify the method to use to characterize phenotypic distribution. Default is our favourite: "kanto"!
+#' @param method A character string in c("kanto", "mmoments") that specify the method to use to characterize phenotypic distribution. Default is our favourite: "kanto"!
 #' @export
-ptl_scan = function(pheno_matrix, genodata_ptl, nb_perm, nb_dim=0, SHOW_SCAN_PROG=FALSE, SHOW_PERM_PROG=TRUE, scan_prog_freq=50, perm_prog_freq=5, method="kanto") {
+ptl_scan = function(pheno_matrix, genodata_ptl, nb_perm, nb_dim=0, min_prop=0.1, SHOW_PERM_PROG=TRUE, perm_prog_freq=5, method="kanto") {
   # function used to compute the number of significants eigen values
   get_nb_eig_sign = function(pheno_matrix, method=method) {
     if (method == "kanto") {
@@ -78,6 +183,8 @@ ptl_scan = function(pheno_matrix, genodata_ptl, nb_perm, nb_dim=0, SHOW_SCAN_PRO
   # GO! #
   #######
   nb_dim_orig = nb_dim
+  bckg = rownames(pheno_matrix)
+  genodata_ptl_filtred = check_marker_allele_prop(genodata_ptl, bckg, min_prop=min_prop)
   # How many Dimension ?
   NEED_TO_COMPUTE_MDS_AND_CAN = TRUE
   dim_scan = dim_scan_zscores = eig_to_scan = NULL
@@ -88,7 +195,7 @@ ptl_scan = function(pheno_matrix, genodata_ptl, nb_perm, nb_dim=0, SHOW_SCAN_PRO
     eig_to_scan = 2:max(2, get_nb_eig_sign(pheno_matrix, method=method))
     dim_scan = apply(t(eig_to_scan), 2, function(test_dim){
       print(paste("Testing nb_dim=", test_dim, "/", max(eig_to_scan), "...", sep=""))
-      ptl_scan(pheno_matrix, genodata_ptl, nb_perm=0, nb_dim=test_dim, method=method)
+      ptl_scan(pheno_matrix, genodata_ptl_filtred, nb_perm=0, nb_dim=test_dim, method=method)
     })
     dim_scan_zscores = sapply(dim_scan, function(d){
     return(zscore(-log10(d$Ws)))
@@ -103,7 +210,7 @@ ptl_scan = function(pheno_matrix, genodata_ptl, nb_perm, nb_dim=0, SHOW_SCAN_PRO
     NEED_TO_COMPUTE_MDS_AND_CAN = FALSE
     # Clean objects ?
     dim_scan = lapply(dim_scan, function(p_scan){
-      p_scan$genodata_ptl = NULL
+      p_scan$genodata = NULL
       p_scan$mds = NULL
       p_scan$cans = NULL
       p_scan
@@ -112,7 +219,7 @@ ptl_scan = function(pheno_matrix, genodata_ptl, nb_perm, nb_dim=0, SHOW_SCAN_PRO
     print(paste("number of dimension for can (forced):", nb_dim))
   }
 
-  # Wilks score for our genodata_ptl (collect mds WS and cans if needed)
+  # Wilks score for our genodata_ptl_filtred (collect mds WS and cans if needed)
   if (NEED_TO_COMPUTE_MDS_AND_CAN) {      
     if (method == "kanto") {
       mds = cmdscale(pheno_matrix,nb_dim,eig=TRUE)
@@ -121,9 +228,7 @@ ptl_scan = function(pheno_matrix, genodata_ptl, nb_perm, nb_dim=0, SHOW_SCAN_PRO
       mds = prcomp(t(pheno_matrix), scale=TRUE)
       data = data.frame(mds$rotation[,1:nb_dim])      
     }
-    foo = apply(t(1:length(genodata_ptl)), 2, function(i) {
-      if (i %% scan_prog_freq == 1 & SHOW_SCAN_PROG) {print(paste("Marker ", i, "/", length(genodata_ptl), sep=""))}
-      all = genodata_ptl[,i]
+    foo = apply(genodata_ptl_filtred, 1, function(all) {
       get_wilks_score(data, all)
     })
     foo = do.call(rbind,foo)
@@ -135,17 +240,18 @@ ptl_scan = function(pheno_matrix, genodata_ptl, nb_perm, nb_dim=0, SHOW_SCAN_PRO
   if (nb_perm > 0) {
     perm_Ws = sapply(1:nb_perm, function(p){
       if (p %% perm_prog_freq == 1 & SHOW_PERM_PROG) {print(paste("permutation", p , "/", nb_perm))}
-        perm_index = sample(1:nrow(genodata_ptl))
-        perm_geno = genodata_ptl[perm_index,]
-        kanto_analysis = ptl_scan(pheno_matrix, perm_geno, nb_perm=0, nb_dim=nb_dim_orig, SHOW_SCAN_PROG=SHOW_SCAN_PROG, scan_prog_freq=scan_prog_freq, method=method)
-        ret = min(kanto_analysis$Ws)
+        perm_index = sample(1:ncol(genodata_ptl_filtred))
+        perm_geno = genodata_ptl_filtred
+        colnames(perm_geno) = colnames(genodata_ptl_filtred)[perm_index]
+        ptl_analysis = ptl_scan(pheno_matrix, perm_geno, nb_perm=0, nb_dim=nb_dim_orig, method=method)
+        ret = min(ptl_analysis$Ws)
         return(ret)            
     })
   } else {
     perm_Ws = NULL
   }
   
-  ptl_analysis = list(genodata=genodata_ptl, mds=mds, Ws=Ws, cans=cans, 
+  ptl_analysis = list(genodata=genodata_ptl_filtred, mds=mds, Ws=Ws, cans=cans, 
       eig_to_scan=eig_to_scan, dim_scan=dim_scan, dim_scan_zscores=dim_scan_zscores, nb_dim=nb_dim, 
       nb_perm=nb_perm, perm_Ws=perm_Ws)
   return(ptl_analysis)
@@ -203,111 +309,6 @@ get_wilks_score = function(data, all) {
 }
 
 
-#' A Function That Preprocesses Genotype of Individuals.
-#'
-#' This function preprocesses genotype of individuals. 
-#' In geneodata, "2" stands for undetermined and is replaced by NA.
-#' @param genodata A matrix describing the genotype of individuals.
-#' @param bckg Vector of character describing the individuals as they are describe in genodata.
-#' @param minimal_proportion A numeric specifying the minimal proportion of each parental allele under which a marker is discard from the analysis.
-#' @export
-preprocess_genodata = function(genodata, bckg, minimal_proportion=0.1) {
-  g = genodata
-  colnames =  as.character(g$prob_name)
-  g =  data.frame(cbind(bckg, t(g[, bckg])), stringsAsFactors=FALSE)
-  colnames(g) = c("spores", colnames)
-  # Check genodata
-  g[g=="2"] = NA
-  kept = sapply(1:ncol(g), function(i) {
-    col = g[bckg, i]
-    nb_ind = length(col)
-    inds = as.vector(na.omit(col))
-    u_inds = unique(inds)
-    for (i in u_inds) {
-      if (sum(inds==i)/nb_ind < minimal_proportion | sum(inds==i)/nb_ind == 1) {
-        # print("Removing something")
-        return(FALSE)
-      }
-    }
-    return(TRUE)
-  })
-  return(g[bckg, kept])
-}
-
-#' A Function That Preprocesses Genotypes and Phenotypes of Individuals for R Package QTL.
-#'
-#' This function preprocesses genotypes and phenotypes of individuals for R Package QTL. 
-#' @inheritParams preprocess_phenodata_rqtl
-#' @inheritParams preprocess_genodata_rqtl
-#' @export
-preprocess_data_rqtl = function(genodata, bckg, pheno_hists, kanto_analysis=NULL, mmoments_analysis=NULL) {
-  genodata_rqtl = preprocess_genodata_rqtl(genodata, bckg)
-  phenodata_rqtl = preprocess_phenodata_rqtl(pheno_hists, kanto_analysis=kanto_analysis, mmoments_analysis=mmoments_analysis)
-  rqtl_data = list()
-  class(rqtl_data) = c("bc", "cross")
-  rqtl_data$geno = list()
-  for (chr in unique(genodata_rqtl$chromosome)) {
-    chr = as.character(chr)
-    rqtl_data$geno[[chr]] = list()
-    rqtl_data$geno[[chr]]$data = t(genodata_rqtl[ genodata_rqtl$chromosome == chr, bckg])
-    colnames(rqtl_data$geno[[chr]]$data) = genodata_rqtl[ genodata_rqtl$chromosome == chr, ]$prob_name
-    rqtl_data$geno[[chr]]$map = as.list(cumsum(genodata_rqtl[genodata_rqtl$chromosome == chr, ]$rec_fractions * 100))
-    names(rqtl_data$geno[[chr]]$map) = genodata_rqtl[genodata_rqtl$chromosome == chr, ]$prob_name
-    rqtl_data$geno[[chr]]$map = unlist(rqtl_data$geno[[chr]]$map)
-    class(rqtl_data$geno[[chr]]) = "A"
-  }
-  rqtl_data$pheno = data.frame(phenodata_rqtl)
-  rqtl_data = jittermap(rqtl_data)
-  rqtl_data = calc.genoprob(rqtl_data, step=10, err=0.01)
-  rqtl_data = sim.geno(rqtl_data, step=10, n.draws=8, err=0.01)
-  return(rqtl_data)
-}
-
-#' A Function That Preprocesses Phenotypes of Individuals for R Package QTL.
-#'
-#' This function preprocesses phenotypes of individuals for R Package QTL. 
-#' @param pheno_hists A list of object containing mean and var attribute. Typically outpout of the `build_pheno_hists` function.
-#' @param kanto_analysis Output of `ptl_scan` function used with the method "kanto".
-#' @param mmoments_analysis Output of `ptl_scan` function used with the method "mmoment". 
-#' @export
-preprocess_phenodata_rqtl = function(pheno_hists, kanto_analysis=NULL, mmoments_analysis=NULL) {
-  phenodata_rqtl = sapply(pheno_hists, function(h) {
-    c(mean=h$mean, var=h$var)
-  })
-  phenodata_rqtl = data.frame(t(phenodata_rqtl))
-  phenodata_rqtl$noise = sqrt(phenodata_rqtl$var) / phenodata_rqtl$mean
-  if (!is.null(kanto_analysis)) {
-    phenodata_rqtl$mds1_k = kanto_analysis$mds$points[,1]
-  }
-  if (!is.null(mmoments_analysis)) {
-    phenodata_rqtl$acp1_mm = mmoments_analysis$mds$rotation[,1]
-  }
-  return(phenodata_rqtl)
-}
-
-
-
-#' A Function That Preprocesses Genotypes of Individuals for R Package QTL.
-#'
-#' This function preprocesses genotypes of individuals for R package QTL. 
-#' In geneodata, "2" stands for undetermined and is replaced by NA.
-#' @param genodata A matrix describing the genotype of individuals.
-#' @param bckg Vector of character describing the individuals as they are describe in genodata.
-#' @export
-preprocess_genodata_rqtl = function(genodata, bckg) {
-  g = genodata
-  prob_name =  as.character(g$prob_name)
-  chromosome =  g$chromosome
-  rec_fractions = genodata$rec_fractions
-  g[g==2] = NA
-  g = g[, bckg] + 1
-  g = data.frame(g)
-  g$chromosome = chromosome
-  g$prob_name = prob_name
-  g$rec_fractions = rec_fractions
-  return(g)
-}
-
 #' A Function That Builds Kantorivitch Distance Matrix.
 #'
 #' This function builds Kantorivitch distance matrix from a list of histograms with all the same `breaks` value.
@@ -328,6 +329,8 @@ build_kd_matrix = function(hists) {
     foo
   })
   bar = bar + t(bar)
+  rownames(bar) = names(hists)
+  colnames(bar) = names(hists)
   return(bar)
 }
 #' A Function That Builds Multivariate Moment Matrix.
@@ -340,15 +343,16 @@ build_kd_matrix = function(hists) {
 build_mmoments_matrix = function(hists, nb_moments=4) {
   l = length(hists)
   print(paste("Building mmoments... ", "(", nb_moments, ")", sep=""))
-  bar = lapply(1:l, function(i) {
+  bar = t(sapply(1:l, function(i) {
     c = hists[[i]]$cells
     moments = sapply(1:nb_moments, function(i){
       moment(c, order=i, central=i!=1)      
     })
     return(moments)
-  })
-  bar = do.call(rbind,bar)
-  return(as.matrix(bar))
+  }))
+  rownames(bar) = names(hists)
+  colnames(bar) = paste("moment_", 1:nb_moments, sep="")
+  return(bar)
 }
 
 #' A Function That Builds Histograms From Single Cell Data.
@@ -374,6 +378,7 @@ build_pheno_hists = function(cells, bin_width=NULL, nb_bin=100) {
     x$cells = c
     x
   })
+  names(pheno_hists) = names(cells)
   return(pheno_hists)  
 }
 
@@ -512,11 +517,11 @@ kantorovich2D = function(x, y, nbreaks=32, lims=NULL, k1=NULL, k2=NULL) {
 #' This function is a workflow that encapsulated many functions of the R package `ptlmapper`. 
 #' It aggregates parameter values, inputs and outputs of the call to the R package `ptlmapper` function.
 #' The resulting data structure could be cache on the file system. 
-#' It is useful to massivelly save multiple call to `plt_scan` and `rqtl_launch` function, for example in a complexe design.  
+#' It is useful to massivelly save multiple call to `plt_scan` and `rqtl_launch` function, for example in a complex design.  
 #' @inheritParams preprocess_genodata
 ## #' @param genodata ...
 ## #' @param bckg ...
-## #' @param minimal_proportion ...
+## #' @param min_prop ...
 #' @inheritParams build_pheno_hists
 ## #' @param cells ...
 ## #' @param bin_width ...
@@ -529,7 +534,7 @@ kantorovich2D = function(x, y, nbreaks=32, lims=NULL, k1=NULL, k2=NULL) {
 #' @param COMPUTE_KD_MATRIX A boolean that specifies if `kd_matrix` needs to be computed.
 #' @param COMPUTE_MM_MATRIX A boolean that specifies if `mm_matrix` needs to be computed.
 #' @param DO_KANTO A boolean that specifies if  `ptl_scan` with method="kanto" needs to be performed.
-#' @param DO_MMOMENTS A boolean that specifies if `ptl_scan` with method="mmoment" needs to be performed.
+#' @param DO_MMOMENTS A boolean that specifies if `ptl_scan` with method="mmoments" needs to be performed.
 #' @param DO_RQTL A boolean that specifies if `rqtl_launch` needs to be called.
 #' @param CLEAN_OBJECT A boolean that specifies if `ptl_mapping` results needs to be cleaned.
 #' @importFrom qtl jittermap
@@ -543,11 +548,11 @@ cells,
 bckg, 
 nb_perm=20, 
 bin_width=NULL, 
-nb_dim=NULL, 
+nb_dim=0, 
 errs = 0.05, 
 nb_bin=100, 
 nb_moments=4,  
-minimal_proportion=0.1, 
+min_prop=0.1, 
 ptl_mapping_filename=NULL, 
 COMPUTE_KD_MATRIX=TRUE, 
 COMPUTE_MM_MATRIX=TRUE, 
@@ -610,7 +615,7 @@ CLEAN_OBJECT=FALSE
     # mmoments_analysis #
     #####################
     if (DO_MMOMENTS) {
-      mmoments_analysis = ptl_scan(mm_matrix, genodata_ptl, nb_perm=nb_perm, nb_dim=nb_dim, method="mmoment")
+      mmoments_analysis = ptl_scan(mm_matrix, genodata_ptl, nb_perm=nb_perm, nb_dim=nb_dim, method="mmoments")
     } else {
       mmoments_analysis=NULL
     }
@@ -622,15 +627,10 @@ CLEAN_OBJECT=FALSE
   }
   
   if (DO_RQTL) {
-    #############
-    # rqtl_data #
-    #############
-    rqtl_data = preprocess_data_rqtl(genodata, bckg, pheno_hists, kanto_analysis, mmoments_analysis)
-
     #################
     # rqtl_analysis #
     #################
-    rqtl_analysis = rqtl_launch(rqtl_data, nb_perm=nb_perm, errs=errs)
+    rqtl_analysis = rqtl_launch(genodata_ptl, pheno_hists, kanto_analysis, mmoments_analysis, nb_perm=nb_perm, errs=errs)
   } else {
     rqtl_analysis=NULL
   }
@@ -779,9 +779,9 @@ plot_wilks = function(ptl_mapping_result, main="", pa=NULL, errs = c(0.05, 0.01,
   }
 }
 
-#' A Function That Plots Encapsulated Wilks Scores for MultiVariate Moment Approach.
+#' A Function That Plots Encapsulated Wilks Scores for MultiVariate Moments Approach.
 #'
-#' This function plots encapsulated Wilks scores for multiVariate moment approach.
+#' This function plots encapsulated Wilks scores for multiVariate moments approach.
 #' @param ptl_mapping_result ...
 #' @param main ... 
 #' @export
@@ -871,7 +871,7 @@ plot_mds = function(ptl_mapping_result, main="", col=NULL, mds=NULL, ...){
 #' @export
 plot_can = function(ptl_mapping_result, marker_names, main="", col=NULL){
   col = na.omit(col)
-  idx = which(names(ptl_mapping_result$kanto_analysis$genodata) == marker_names)
+  idx = which(rownames(ptl_mapping_result$kanto_analysis$genodata) == marker_names)
   can = ptl_mapping_result$kanto_analysis$cans[[idx]]
   nb_dim_mds = ptl_mapping_result$kanto_analysis$nb_dim
   # all_col = (can$scores$allele * 2) + 2
@@ -1015,11 +1015,7 @@ get_best_markers_rptl = function(ptl_mapping_result, chr=NULL) {
   } else {
     min_Ws = min(pa$Ws)
   }
-  best_marker_names = names(pa$genodata[which(pa$Ws == min_Ws)])
-  # Retro compatibility for previously cached ptl_mapping_result (sindataset)
-  if (!("prob_name" %in% names(ptl_mapping_result$genodata))) {
-      ptl_mapping_result$genodata$prob_name = ptl_mapping_result$genodata$RQTL.name
-  }
+  best_marker_names = rownames(pa$genodata[which(pa$Ws == min_Ws),])
   ret = ptl_mapping_result$genodata[which(ptl_mapping_result$genodata$prob_name %in% best_marker_names),c("chromosome","position")]
   ret$W = -log10(min_Ws)
   rownames(ret) = best_marker_names
@@ -1033,7 +1029,7 @@ get_best_markers_rptl = function(ptl_mapping_result, chr=NULL) {
 #' @param marker_names ...
 #' @export
 mn_2_col = function(ptl_mapping_result, marker_names) {
-  as.numeric(ptl_mapping_result$kanto_analysis$genodata[,marker_names]) * 2 + 2
+  as.numeric(ptl_mapping_result$kanto_analysis$genodata[marker_names,]) * 2 + 2
 }
 
 
