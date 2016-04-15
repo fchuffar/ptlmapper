@@ -50,6 +50,8 @@ foo = sapply(rownames(indiv), function(i) {
 
 ## ------------------------------------------------------------------------
 library(ptlmapper)
+
+## ------------------------------------------------------------------------
 pheno_hists = build_pheno_hists(cells, bin_width=1)
 
 ## ------------------------------------------------------------------------
@@ -69,14 +71,14 @@ genodata$rec_fractions = 0.05
 genodata_ptl = preprocess_genodata(genodata, bckg)
 
 ## ------------------------------------------------------------------------
-# kanto_analysis = ptl_scan(kd_matrix, genodata_ptl, nb_perm=3, method="kanto")
-# mmoments_analysis = ptl_scan(mm_matrix, genodata_ptl, nb_perm=3, method="mmoments")
+kanto_analysis = ptl_scan(kd_matrix, genodata_ptl, method="kanto")
+mmoments_analysis = ptl_scan(mm_matrix, genodata_ptl, method="mmoments")
 
 ## ------------------------------------------------------------------------
-# rqtl_analysis = rqtl_launch(genodata_ptl, pheno_hists, kanto_analysis, mmoments_analysis)
+rqtl_analysis = rqtl_launch(genodata_ptl, pheno_hists, kanto_analysis, mmoments_analysis)
 
-## ------------------------------------------------------------------------
-ptl_mapping_result = ptl_mapping(genodata_ptl, cells, bckg, nb_perm=3, bin_width=1)
+## ---- results='hide'-----------------------------------------------------
+ptl_mapping_result = ptl_mapping(genodata, cells, bckg, nb_perm=20, bin_width=1)
 
 ## ----fig.height=3, fig.width=9-------------------------------------------
 layout(matrix(1:3, 1, byrow=TRUE), respect=TRUE)
@@ -86,20 +88,25 @@ plot_rqtl(ptl_mapping_result, which_pheno=3)
 
 ## ----fig.height=3, fig.width=9-------------------------------------------
 best_marker_kanto = get_best_markers_rptl(ptl_mapping_result, method="kanto")
-col = marker2col(ptl_mapping_result, rownames(best_marker_kanto)[1])
-
-layout(matrix(1:3, 1, byrow=TRUE), respect=TRUE)
-plot_orth_trans(ptl_mapping_result, col=col, method="kanto")
-plot_wilks(ptl_mapping_result, method="kanto")
-plot_can(ptl_mapping_result, rownames(best_marker_kanto)[1], col=col, method="kanto")
 print(best_marker_kanto)
 
 ## ----fig.height=3, fig.width=9-------------------------------------------
-best_marker_mmoments = get_best_markers_rptl(ptl_mapping_result, method="mmoments")
-col = marker2col(ptl_mapping_result, rownames(best_marker_mmoments)[1])
-
 layout(matrix(1:3, 1, byrow=TRUE), respect=TRUE)
+best_marker_name = rownames(best_marker_kanto)[1]
+col = marker2col(ptl_mapping_result, best_marker_name)
+plot_orth_trans(ptl_mapping_result, col=col, method="kanto")
+plot_wilks(ptl_mapping_result, method="kanto")
+plot_can(ptl_mapping_result, best_marker_name, col=col, method="kanto")
+
+## ----fig.height=3, fig.width=9-------------------------------------------
+best_marker_mmoments = get_best_markers_rptl(ptl_mapping_result, method="mmoments")
+print(best_marker_mmoments)
+
+## ----fig.height=3, fig.width=9-------------------------------------------
+layout(matrix(1:3, 1, byrow=TRUE), respect=TRUE)
+best_marker_name = rownames(best_marker_mmoments)[1]
+col = marker2col(ptl_mapping_result, best_marker_name)
 plot_orth_trans(ptl_mapping_result, col=col, method="mmoments")
 plot_wilks(ptl_mapping_result, method="mmoments")
-plot_can(ptl_mapping_result, rownames(best_marker_kanto)[1], col=col, method="mmoments")
+plot_can(ptl_mapping_result, best_marker_name, col=col, method="mmoments")
 
