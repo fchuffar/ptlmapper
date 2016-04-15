@@ -2,7 +2,7 @@
 % Please edit documentation in R/ptlmapper.R
 \name{kantorovich}
 \alias{kantorovich}
-\title{A Function That Computes Kantorovich Distance.}
+\title{A Function That Computes Kantorovich Distance}
 \usage{
 kantorovich(x, y, nbreaks = 100, lims = NULL, h1 = NULL, h2 = NULL)
 }
@@ -37,17 +37,17 @@ h2 <-  hist(y, plot = FALSE, breaks = tmp_breaks);
 diff = h1$density - h2$density
 cumdiff = cumsum(diff)
 
-plot(h1$density, type="l", main="Distributions", col=2, lwd=3, xlab="", ylab="density", xaxt="n", yaxt="n")
+plot(h1$density, main="Distributions", type="l", col=2, xlab="", ylab="density")
 lines(h2$density, type="l", col=4, lwd=3)
 legend("topright", col=c(2,4),  legend=c("P", "Q"), lwd=2)
 abline(h=0, lty=2)
 axis(2, at=0)
 
-plot(diff, type="l", main="Difference", lwd=3, xlab="", ylab="diff", xaxt="n", yaxt="n")
+plot(diff, type="l", main="Difference", lwd=3, xlab="", ylab="diff")
 abline(h=0, lty=2)
 axis(2, at=0)
 
-plot(cumdiff, type="l", main="Cumulative Sum", lwd=3, xlab="", ylab="cumsum", xaxt="n", yaxt="n")
+plot(cumdiff, type="l", main="Cumulative Sum", lwd=3, xlab="", ylab="cumsum")
 polygon(x= 1:length(cumdiff), y = cumdiff, col = "grey")
 lines(cumdiff, type="l", lwd=3)
 abline(h=0, lty=2)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/ptlmapper.R
 \name{rqtl_launch}
 \alias{rqtl_launch}
-\title{A Function That Scans Genome to Detect QTLs (based on R package `qtl`).}
+\title{A Function That Scans Genome to Detect QTLs (based on R package `qtl`)}
 \usage{
 rqtl_launch(genodata_ptl, pheno_hists, kanto_analysis = NULL,
   mmoments_analysis = NULL, nb_perm = 1000, errs = 0.05)
@@ -19,8 +19,6 @@ rqtl_launch(genodata_ptl, pheno_hists, kanto_analysis = NULL,
 \item{nb_perm}{An integer that specifies the number of permuation to do.}
 
 \item{errs}{A vector of integer (error) that will be used to compute threshold from the permutation test.}
-
-\item{rqtl_data}{Preprocessed genotypes (typically outpout of preprocess_data_rqtl function).}
 }
 \description{
 This function embed R package `qtl`. It scans genome to detect QTLs using `ptlmapper` data structires.

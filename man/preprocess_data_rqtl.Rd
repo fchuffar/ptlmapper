@@ -2,7 +2,7 @@
 % Please edit documentation in R/ptlmapper.R
 \name{preprocess_data_rqtl}
 \alias{preprocess_data_rqtl}
-\title{A Function That Preprocesses Genotypes and Phenotypes of Individuals for R Package QTL.}
+\title{A Function That Preprocesses Genotypes and Phenotypes of Individuals for R Package QTL}
 \usage{
 preprocess_data_rqtl(genodata_ptl, pheno_hists, kanto_analysis = NULL,
   mmoments_analysis = NULL)

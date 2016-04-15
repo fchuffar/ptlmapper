@@ -2,23 +2,25 @@
 % Please edit documentation in R/ptlmapper.R
 \name{plot_wilks}
 \alias{plot_wilks}
-\title{A Function That Plots Encapsulated Wilks Scores.}
+\title{A Function That Plots Encapsulated Wilks Scores}
 \usage{
-plot_wilks(ptl_mapping_result, main = "", pa = NULL, errs = c(0.05, 0.01,
-  0.005), ylim = NULL, y_thres = NULL, method = "kanto")
+plot_wilks(ptl_mapping_result, method = "kanto", main = "", errs = 0.05,
+  ylim = NULL, y_thres = NULL, ...)
 }
 \arguments{
-\item{ptl_mapping_result}{...}
+\item{ptl_mapping_result}{An outputs of the `ptl_mapping` function.}
 
-\item{main}{...}
+\item{method}{A character string in c("kanto", "mmoments") that specify the method to use to characterize phenotypic distribution.}
 
-\item{pa}{...}
+\item{main}{A character string specifying additionnal title informatoion.}
 
-\item{errs}{...}
+\item{errs}{A vector of integer (error) that will be used to compute threshold from the permutation test.}
 
-\item{ylim}{...}
+\item{ylim}{Forcing ylim value of the plot.}
 
-\item{y_thres}{...}
+\item{y_thres}{Forcing thres level on the plot.}
+
+\item{...}{Args forward to `plot` function.}
 }
 \description{
 This function plots encapsulated Wilks scores.

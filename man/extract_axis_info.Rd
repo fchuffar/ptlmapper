@@ -2,7 +2,7 @@
 % Please edit documentation in R/ptlmapper.R
 \name{extract_axis_info}
 \alias{extract_axis_info}
-\title{A Function That Extracts Axis Information from a 'ptl_mapping' Data Structure.}
+\title{A Function That Extracts Axis Information from a 'ptl_mapping' Data Structure}
 \usage{
 extract_axis_info(ptl_mapping_result, delta = 0.6)
 }

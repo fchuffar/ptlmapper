@@ -2,7 +2,7 @@
 % Please edit documentation in R/ptlmapper.R
 \name{get_best_markers_rqtl}
 \alias{get_best_markers_rqtl}
-\title{A Function That Returns Best Markers Obtained in the Classical QTL Search.}
+\title{A Function That Returns Best Markers Obtained in the Classical QTL Search}
 \usage{
 get_best_markers_rqtl(ptl_mapping_result, which_pheno)
 }

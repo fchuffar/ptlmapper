@@ -2,7 +2,7 @@
 % Please edit documentation in R/ptlmapper.R
 \name{get_wilks_score}
 \alias{get_wilks_score}
-\title{A Function That Compute the Wilks Score.}
+\title{A Function That Compute the Wilks Score}
 \usage{
 get_wilks_score(data, all)
 }

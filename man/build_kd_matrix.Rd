@@ -2,7 +2,7 @@
 % Please edit documentation in R/ptlmapper.R
 \name{build_kd_matrix}
 \alias{build_kd_matrix}
-\title{A Function That Builds Kantorivitch Distance Matrix.}
+\title{A Function That Builds Kantorivitch Distance Matrix}
 \usage{
 build_kd_matrix(hists)
 }

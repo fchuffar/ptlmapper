@@ -2,7 +2,7 @@
 % Please edit documentation in R/ptlmapper.R
 \name{plot_empirical_test}
 \alias{plot_empirical_test}
-\title{A Function That Plots Empirical P-Values.}
+\title{A Function That Plots Empirical P-Values}
 \usage{
 plot_empirical_test(ptl_mapping_result, main = "", errs = c(0.05, 0.01,
   0.005))

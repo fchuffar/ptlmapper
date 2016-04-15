@@ -5,30 +5,26 @@ genodata = ptldata::genodata
 cells = ptldata::cells
 
 ## ------------------------------------------------------------------------
-head(indiv)
-
-## ------------------------------------------------------------------------
 err = 0.2
 nb_indiv = 80
 idx = which(indiv$err==err)[1:nb_indiv]
 cells = cells[idx]
 indiv = indiv[idx,]
 genodata = genodata[,idx]
+head(indiv)
 
 ## ----fig.height=3, fig.width=9-------------------------------------------
 layout(matrix(1:3, 1), respect=TRUE)
 for (m in c("m1","m2","m3")){  
-  h = hist(indiv[[m]], nclass=20, 
-    main=paste("moment", m, sep=""), xlab="", ylab="", 
-    col=adjustcolor("grey", alpha=0.3))
+  h = hist(indiv[[m]], nclass=20, main=m, xlab="", ylab="", col="grey")
   for (all in unique(indiv$all)) {
     h = hist(indiv[indiv$all==all,][[m]], plot=FALSE, breaks=h$breaks)    
-    lines(h, col=adjustcolor(all+1, alpha=0.3))
+    lines(h, col=adjustcolor(all*2, alpha=0.3))
   }
 }
 
 ## ------------------------------------------------------------------------
-genodata[1:10, 1:7]
+genodata[96:106, 1:7]
 
 ## ----fig.height=6, fig.width=6-------------------------------------------
 tetas = compute_teta(genodata)
@@ -46,15 +42,19 @@ abline(v=mean(tetas), lty=2)
 head(names(cells))
 
 ## ----fig.width=6, fig.height=6-------------------------------------------
-# plot_dist(ptl_mapping_result, main=main, col=col)
-library(ptlmapper)
+plot(0,0, col=0, xlim=c(-1.5,27), ylim=c(0,0.3), 
+  main="distribution of phenotypes", xlab="single cell value", ylab="density")
+foo = sapply(rownames(indiv), function(i) {
+  lines(density(cells[[i]], bw=1), col=indiv[i,"all"]*2)
+})
 
 ## ------------------------------------------------------------------------
+library(ptlmapper)
 pheno_hists = build_pheno_hists(cells, bin_width=1)
 
 ## ------------------------------------------------------------------------
 kd_matrix = build_kd_matrix(pheno_hists)
-head(kd_matrix)
+kd_matrix[1:6,1:6]
 
 ## ------------------------------------------------------------------------
 mm_matrix = build_mmoments_matrix(pheno_hists, nb_moment=4)
@@ -69,11 +69,11 @@ genodata$rec_fractions = 0.05
 genodata_ptl = preprocess_genodata(genodata, bckg)
 
 ## ------------------------------------------------------------------------
-kanto_analysis = ptl_scan(kd_matrix, genodata_ptl, nb_perm=3, method="kanto")
-mmoments_analysis = ptl_scan(mm_matrix, genodata_ptl, nb_perm=3, method="mmoments")
+# kanto_analysis = ptl_scan(kd_matrix, genodata_ptl, nb_perm=3, method="kanto")
+# mmoments_analysis = ptl_scan(mm_matrix, genodata_ptl, nb_perm=3, method="mmoments")
 
 ## ------------------------------------------------------------------------
-rqtl_analysis = rqtl_launch(genodata_ptl, pheno_hists, kanto_analysis, mmoments_analysis)
+# rqtl_analysis = rqtl_launch(genodata_ptl, pheno_hists, kanto_analysis, mmoments_analysis)
 
 ## ------------------------------------------------------------------------
 ptl_mapping_result = ptl_mapping(genodata_ptl, cells, bckg, nb_perm=3, bin_width=1)
@@ -85,13 +85,21 @@ plot_rqtl(ptl_mapping_result, which_pheno=2)
 plot_rqtl(ptl_mapping_result, which_pheno=3)
 
 ## ----fig.height=3, fig.width=9-------------------------------------------
+best_marker_kanto = get_best_markers_rptl(ptl_mapping_result, method="kanto")
+col = marker2col(ptl_mapping_result, rownames(best_marker_kanto)[1])
+
 layout(matrix(1:3, 1, byrow=TRUE), respect=TRUE)
-plot_mds(ptl_mapping_result, main=main, col=col)
-plot_wilks(ptl_mapping_result, main=main, method="kanto")
-plot_can(ptl_mapping_result, marker_names[1], main=main, col=col)
+plot_orth_trans(ptl_mapping_result, col=col, method="kanto")
+plot_wilks(ptl_mapping_result, method="kanto")
+plot_can(ptl_mapping_result, rownames(best_marker_kanto)[1], col=col, method="kanto")
+print(best_marker_kanto)
 
 ## ----fig.height=3, fig.width=9-------------------------------------------
+best_marker_mmoments = get_best_markers_rptl(ptl_mapping_result, method="mmoments")
+col = marker2col(ptl_mapping_result, rownames(best_marker_mmoments)[1])
+
 layout(matrix(1:3, 1, byrow=TRUE), respect=TRUE)
-plot_wilks(ptl_mapping_result=ptl_mapping_result, pa=ptl_mapping_result$mmoments_analysis, main=paste(nb_indiv, "indiv (mm)"), method="mmoments")
-plot_dist(ptl_mapping_result, main=main, col=col)
+plot_orth_trans(ptl_mapping_result, col=col, method="mmoments")
+plot_wilks(ptl_mapping_result, method="mmoments")
+plot_can(ptl_mapping_result, rownames(best_marker_kanto)[1], col=col, method="mmoments")
 

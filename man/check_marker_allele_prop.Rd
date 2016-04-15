@@ -2,7 +2,7 @@
 % Please edit documentation in R/ptlmapper.R
 \name{check_marker_allele_prop}
 \alias{check_marker_allele_prop}
-\title{A Function That Checks Proportion of Allele for each Marker.}
+\title{A Function That Checks Proportion of Allele for each Marker}
 \usage{
 check_marker_allele_prop(genodata, bckg, min_prop = 0.1)
 }

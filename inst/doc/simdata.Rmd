@@ -23,6 +23,7 @@ The production of protein is control by the following equation:
 
 We use two sets of parameter to produce cell populations:
 
+<span style="color:red;">
 \[\left\lbrace
   \begin{array}{l}
     \alpha_0 = 0.1 \\
@@ -30,7 +31,9 @@ We use two sets of parameter to produce cell populations:
     K = 1.6
   \end{array}
 \right.\]
+</span> 
 
+<span style="color:blue;">
 \[\left\lbrace
   \begin{array}{l}
     \alpha_0 = 6.3\\
@@ -38,6 +41,7 @@ We use two sets of parameter to produce cell populations:
     K = 10
   \end{array}
 \right.\]
+</span> 
 
 For each individual we generate 20000 cells according to one of this two set of parameters and a given level of error on the parameter values.
 
@@ -69,10 +73,6 @@ cells = ptldata::cells
 
 The `indiv` rows are named with corresponding individual names.
 
-```{r}
-head(indiv)
-```
-
 In this study, we only focus on individuals that have been generated with the level of error of 0.2 and, for computanial reason we down sample 80 individuals.
 
 
@@ -83,6 +83,7 @@ idx = which(indiv$err==err)[1:nb_indiv]
 cells = cells[idx]
 indiv = indiv[idx,]
 genodata = genodata[,idx]
+head(indiv)
 ```
 
 This picture shows the distribution of the first, second and third moment of the single cells data associated to each individual in grey and its composition (in blue and red) if we considere discriminant parental allele orign. Red and blue histograms of the first and second moment are overlaping. The two same histograms of the third moemnt are separated.
@@ -90,12 +91,10 @@ This picture shows the distribution of the first, second and third moment of the
 ```{r,fig.height=3, fig.width=9}
 layout(matrix(1:3, 1), respect=TRUE)
 for (m in c("m1","m2","m3")){  
-  h = hist(indiv[[m]], nclass=20, 
-    main=paste("moment", m, sep=""), xlab="", ylab="", 
-    col=adjustcolor("grey", alpha=0.3))
+  h = hist(indiv[[m]], nclass=20, main=m, xlab="", ylab="", col="grey")
   for (all in unique(indiv$all)) {
     h = hist(indiv[indiv$all==all,][[m]], plot=FALSE, breaks=h$breaks)    
-    lines(h, col=adjustcolor(all+1, alpha=0.3))
+    lines(h, col=adjustcolor(all*2, alpha=0.3))
   }
 }
 ```
@@ -114,7 +113,7 @@ The `genodata` columns are named with corresponding individual names.
 The `genodata` rows are named by marker name.
 
 ```{r}
-genodata[1:10, 1:7]
+genodata[96:106, 1:7]
 ```
 
 The following image figures out the parental origin of segregant genomes according to marker.
@@ -150,8 +149,11 @@ head(names(cells))
 
 
 ```{r,fig.width=6, fig.height=6}
-# plot_dist(ptl_mapping_result, main=main, col=col)
-library(ptlmapper)
+plot(0,0, col=0, xlim=c(-1.5,27), ylim=c(0,0.3), 
+  main="distribution of phenotypes", xlab="single cell value", ylab="density")
+foo = sapply(rownames(indiv), function(i) {
+  lines(density(cells[[i]], bw=1), col=indiv[i,"all"]*2)
+})
 ```
 
 ### Method
@@ -166,6 +168,7 @@ We obtain a list of histogram, one per individual.
 All this histograms have the same `breaks` values. 
 
 ```{r}
+library(ptlmapper)
 pheno_hists = build_pheno_hists(cells, bin_width=1)
 ```
 
@@ -178,7 +181,7 @@ This matrix is a symetric distance matrix where columns and rows are named by na
 
 ```{r}
 kd_matrix = build_kd_matrix(pheno_hists)
-head(kd_matrix)
+kd_matrix[1:6,1:6]
 ```
 
 #### computation of the multivariate moments matrix
@@ -221,8 +224,8 @@ If `nb_dim=NULL`, `nb_dim` is automatically set to `max(eig_to_scan)`.
 If `nb_dim>0` the canonical analysis is performed using the provided `nb_dim`. In this two last cases, pay attention that a high value of `nb_dim` introduces a lot of degree of freedom in your canonical analysis. The number of dimension `nb_dim` needs to be __substantially__ smaller than the size of your population. 
 
 ```{r}
-kanto_analysis = ptl_scan(kd_matrix, genodata_ptl, nb_perm=3, method="kanto")
-mmoments_analysis = ptl_scan(mm_matrix, genodata_ptl, nb_perm=3, method="mmoments")
+# kanto_analysis = ptl_scan(kd_matrix, genodata_ptl, nb_perm=3, method="kanto")
+# mmoments_analysis = ptl_scan(mm_matrix, genodata_ptl, nb_perm=3, method="mmoments")
 ```
 
 
@@ -231,7 +234,7 @@ mmoments_analysis = ptl_scan(mm_matrix, genodata_ptl, nb_perm=3, method="mmoment
 The `ptlmapper` package embed features of the famous `qtl` package [Broman et al. (2003)]. It allows to perform classic QTL mapping on univariate criteria (ex: mean, variance) using `ptlmapper` data structires. 
 
 ```{r}
-rqtl_analysis = rqtl_launch(genodata_ptl, pheno_hists, kanto_analysis, mmoments_analysis)
+# rqtl_analysis = rqtl_launch(genodata_ptl, pheno_hists, kanto_analysis, mmoments_analysis)
 ```
 
 
@@ -262,19 +265,29 @@ plot_rqtl(ptl_mapping_result, which_pheno=3)
 
 ##### Kantovitch method
 ```{r,fig.height=3, fig.width=9}
+best_marker_kanto = get_best_markers_rptl(ptl_mapping_result, method="kanto")
+col = marker2col(ptl_mapping_result, rownames(best_marker_kanto)[1])
+
 layout(matrix(1:3, 1, byrow=TRUE), respect=TRUE)
-plot_mds(ptl_mapping_result, main=main, col=col)
-plot_wilks(ptl_mapping_result, main=main, method="kanto")
-plot_can(ptl_mapping_result, marker_names[1], main=main, col=col)
+plot_orth_trans(ptl_mapping_result, col=col, method="kanto")
+plot_wilks(ptl_mapping_result, method="kanto")
+plot_can(ptl_mapping_result, rownames(best_marker_kanto)[1], col=col, method="kanto")
+print(best_marker_kanto)
 ```
 
 
 ##### multivariate moments method
 ```{r,fig.height=3, fig.width=9}
+best_marker_mmoments = get_best_markers_rptl(ptl_mapping_result, method="mmoments")
+col = marker2col(ptl_mapping_result, rownames(best_marker_mmoments)[1])
+
 layout(matrix(1:3, 1, byrow=TRUE), respect=TRUE)
-plot_wilks(ptl_mapping_result=ptl_mapping_result, pa=ptl_mapping_result$mmoments_analysis, main=paste(nb_indiv, "indiv (mm)"), method="mmoments")
-plot_dist(ptl_mapping_result, main=main, col=col)
+plot_orth_trans(ptl_mapping_result, col=col, method="mmoments")
+plot_wilks(ptl_mapping_result, method="mmoments")
+plot_can(ptl_mapping_result, rownames(best_marker_kanto)[1], col=col, method="mmoments")
 ```
+
+
 
 
 ## Bibliography

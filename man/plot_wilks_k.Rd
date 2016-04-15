@@ -2,14 +2,12 @@
 % Please edit documentation in R/ptlmapper.R
 \name{plot_wilks_k}
 \alias{plot_wilks_k}
-\title{A Function That Plots Encapsulated Wilks Scores for Kantoritch Approach.}
+\title{A Function That Plots Encapsulated Wilks Scores for Kantoritch Approach}
 \usage{
-plot_wilks_k(ptl_mapping_result, main = "", ...)
+plot_wilks_k(...)
 }
 \arguments{
-\item{ptl_mapping_result}{...}
-
-\item{main}{...}
+\item{...}{Args forward to `plot_wilks` function.}
 }
 \description{
 This function plots encapsulated Wilks scores for Kantoritch approach.

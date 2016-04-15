@@ -2,7 +2,7 @@
 % Please edit documentation in R/ptlmapper.R
 \name{kantorovich2D}
 \alias{kantorovich2D}
-\title{A Function That Computes Kantorovich Distance between two 2D samples.}
+\title{A Function That Computes Kantorovich Distance between two 2D samples}
 \usage{
 kantorovich2D(x, y, nbreaks = 32, lims = NULL, k1 = NULL, k2 = NULL)
 }
@@ -15,9 +15,9 @@ kantorovich2D(x, y, nbreaks = 32, lims = NULL, k1 = NULL, k2 = NULL)
 
 \item{lims}{vector of numerics of length 2 that specifies the range on which the histograms need to be built.}
 
-\item{h1}{An histogram.}
+\item{k1}{A kernel obtains with the `kde2d` function.}
 
-\item{h2}{An histogram with the same breaks value as h1.}
+\item{k2}{A kernel obtains with the `kde2d` function with the same n and lims as /k1/.}
 }
 \value{
 The kantorovich distance between two 2D samples.

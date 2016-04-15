@@ -2,7 +2,7 @@
 % Please edit documentation in R/ptlmapper.R
 \name{preprocess_genodata}
 \alias{preprocess_genodata}
-\title{A Function That Preprocesses Genotype of Individuals.}
+\title{A Function That Preprocesses Genotype of Individuals}
 \usage{
 preprocess_genodata(genodata, bckg)
 }

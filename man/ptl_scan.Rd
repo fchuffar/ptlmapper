@@ -2,12 +2,15 @@
 % Please edit documentation in R/ptlmapper.R
 \name{ptl_scan}
 \alias{ptl_scan}
-\title{A Function That Scans Genome to Detect PTLs.}
+\title{A Function That Scans Genome to Detect PTLs}
 \usage{
-ptl_scan(pheno_matrix, genodata_ptl, nb_perm, nb_dim = 0, min_prop = 0.1,
-  SHOW_PERM_PROG = TRUE, perm_prog_freq = 5, method = "kanto")
+ptl_scan(pheno_matrix, genodata_ptl, nb_perm = 0, nb_dim = 0,
+  min_prop = 0.1, SHOW_PERM_PROG = TRUE, perm_prog_freq = 5,
+  method = "kanto")
 }
 \arguments{
+\item{pheno_matrix}{The phenotype matrix (Kantorivitch distance matrix or multivariate moments matrix, according to `method`).}
+
 \item{genodata_ptl}{The preprocessed genodata. Typically output of `preprocess_genodata` function.}
 
 \item{nb_perm}{An integer that specifies the number of permuation to do.}
@@ -16,13 +19,11 @@ ptl_scan(pheno_matrix, genodata_ptl, nb_perm, nb_dim = 0, min_prop = 0.1,
 
 \item{min_prop}{A numeric specifying the minimal proportion of each parental allele under which a marker is discard from the analysis.}
 
+\item{SHOW_PERM_PROG}{A boolean specifying if permutation progression need to to report on console.}
+
+\item{perm_prog_freq}{An integer specifying the frequency of the permution progression reporting.}
+
 \item{method}{A character string in c("kanto", "mmoments") that specify the method to use to characterize phenotypic distribution. Default is our favourite: "kanto"!}
-
-\item{kd_matrix}{The Kantorivitch distance matrix.}
-
-\item{SHOW_PERM_PROG=TRUE}{A boolean specifying if permutation progression need to to report on console.}
-
-\item{perm_prog_freq=5}{An integer specifying the frequency of the permution progression reporting.}
 }
 \description{
 This function scans genome to detect PTLs. 

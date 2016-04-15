@@ -2,7 +2,7 @@
 % Please edit documentation in R/ptlmapper.R
 \name{plot_noise}
 \alias{plot_noise}
-\title{A Function That Plots Empirical P-Values.}
+\title{A Function That Plots Noise}
 \usage{
 plot_noise(ptl_mapping_result, main = "", col = NULL)
 }
@@ -14,6 +14,6 @@ plot_noise(ptl_mapping_result, main = "", col = NULL)
 \item{col}{...}
 }
 \description{
-This function plots empirical p-values.
+This function plots noise.
 }
 

@@ -2,14 +2,16 @@
 % Please edit documentation in R/ptlmapper.R
 \name{get_best_markers_rptl}
 \alias{get_best_markers_rptl}
-\title{A Function That Returns Best Markers Obtained in the PTL Search.}
+\title{A Function That Returns Best Markers Obtained in the PTL Search}
 \usage{
-get_best_markers_rptl(ptl_mapping_result, chr = NULL)
+get_best_markers_rptl(ptl_mapping_result, chr = NULL, method = "kanto")
 }
 \arguments{
-\item{ptl_mapping_result}{...}
+\item{ptl_mapping_result}{An outputs of the `ptl_mapping` function.}
 
-\item{chr}{...}
+\item{chr}{A character string focusing on a particular chromosome.}
+
+\item{method}{A character string in c("kanto", "mmoments") that specify the method to use to characterize phenotypic distribution.}
 }
 \description{
 This function returns best markers obtained in the PTL search.

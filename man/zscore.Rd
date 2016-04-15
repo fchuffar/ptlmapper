@@ -2,7 +2,7 @@
 % Please edit documentation in R/ptlmapper.R
 \name{zscore}
 \alias{zscore}
-\title{A Function That Computes Z-Score.}
+\title{A Function That Computes Z-Score}
 \usage{
 zscore(dWs, p = 0.95)
 }

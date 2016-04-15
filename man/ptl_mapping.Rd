@@ -2,7 +2,7 @@
 % Please edit documentation in R/ptlmapper.R
 \name{ptl_mapping}
 \alias{ptl_mapping}
-\title{A Workflow That Maps PTLs, QTLs, Returns involved Objects, Embed Caching Fetures.}
+\title{A Workflow That Maps PTLs, QTLs, Returns involved Objects, Embed Caching Fetures}
 \usage{
 ptl_mapping(genodata, cells, bckg, nb_perm = 20, bin_width = NULL,
   nb_dim = 0, errs = 0.05, nb_bin = 100, nb_moments = 4,
@@ -28,6 +28,8 @@ ptl_mapping(genodata, cells, bckg, nb_perm = 20, bin_width = NULL,
 \item{nb_bin}{An integer specifying the number of to use.}
 
 \item{nb_moments}{An integer specifying the number of moments to compute.}
+
+\item{min_prop}{A numeric specifying the minimal proportion of each parental allele under which a marker is discard from the analysis.}
 
 \item{ptl_mapping_filename}{A character string that specifies the file to save the `ptl_mapping` results.}
 

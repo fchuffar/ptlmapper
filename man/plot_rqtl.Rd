@@ -2,18 +2,21 @@
 % Please edit documentation in R/ptlmapper.R
 \name{plot_rqtl}
 \alias{plot_rqtl}
-\title{A Function That Plots Encapsulated RQTL Outputs.}
+\title{A Function That Plots Encapsulated RQTL Outputs}
 \usage{
-plot_rqtl(ptl_mapping_result, main = "", ylim = NULL, which_pheno = NULL)
+plot_rqtl(ptl_mapping_result, main = "", ylim = NULL, which_pheno = NULL,
+  ...)
 }
 \arguments{
-\item{ptl_mapping_result}{...}
+\item{ptl_mapping_result}{An outputs of the `ptl_mapping` function.}
 
-\item{main}{...}
+\item{main}{A character string specifying additionnal title informatoion.}
 
-\item{ylim}{...}
+\item{ylim}{Forcing ylim value of the plot.}
 
-\item{which_pheno}{...}
+\item{which_pheno}{A numeric vector specifying which phenotype we wants to plot.}
+
+\item{...}{Args forward to `plot` function.}
 }
 \description{
 This function plots encapsulated RQTL outputs.

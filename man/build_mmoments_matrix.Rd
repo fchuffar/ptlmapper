@@ -2,7 +2,7 @@
 % Please edit documentation in R/ptlmapper.R
 \name{build_mmoments_matrix}
 \alias{build_mmoments_matrix}
-\title{A Function That Builds Multivariate Moment Matrix.}
+\title{A Function That Builds Multivariate Moment Matrix}
 \usage{
 build_mmoments_matrix(hists, nb_moments = 4)
 }

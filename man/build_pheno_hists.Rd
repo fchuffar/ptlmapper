@@ -2,7 +2,7 @@
 % Please edit documentation in R/ptlmapper.R
 \name{build_pheno_hists}
 \alias{build_pheno_hists}
-\title{A Function That Builds Histograms From Single Cell Data.}
+\title{A Function That Builds Histograms From Single Cell Data}
 \usage{
 build_pheno_hists(cells, bin_width = NULL, nb_bin = 100)
 }

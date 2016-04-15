@@ -2,7 +2,7 @@
 % Please edit documentation in R/ptlmapper.R
 \name{plot_dist}
 \alias{plot_dist}
-\title{A Function Distribution of the Phenotypes.}
+\title{A Function Distribution of the Phenotypes}
 \usage{
 plot_dist(ptl_mapping_result, col = NULL, main = "", xlim = NULL,
   ylim = NULL, only_n_first = 0, KANTO_DENSITY = TRUE,
