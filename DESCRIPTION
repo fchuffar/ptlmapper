@@ -5,8 +5,9 @@ Description: In living organisms, cell-to-cell variability can have dramatic con
 Version: 0.0.1.9000
 Date: 2016-03-27
 Authors@R: c(
-    person("Florent", "Chuffart", ,"florent.chuffart@gmail.com", c("aut", "cre", "cph")),
-    person("Gael", "Yvert", ,"gael.yvert@ens-lyon.fr", "aut")
+    person("Florent", "Chuffart", ,"florent.chuffart@gmail.com", c("aut", "cre")),
+    person("Gael", "Yvert", ,"gael.yvert@ens-lyon.fr", "aut"),
+    person("CNRS", , , , "cph")
     )
 Maintainer: Florent Chuffart <florent.chuffart@gmail.com>
 License: CeCILL
