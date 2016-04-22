@@ -727,8 +727,8 @@ plot_rqtl = function(ptl_mapping_result, main="", ylim=NULL, which_pheno=NULL, .
     main2 = paste("QTL of ", colnames(ptl_mapping_result$rqtl_analysis$pheno)[i], main)
     # plot(rqtl_res$scan_output, main=main, ylim=c(0, max(c(rqtl_res$thres, rqtl_res$scan_output$lod))))
     plot(rqtl_res$scan_output, main=main2, ylim=cur_ylim)
-    abline(h=rqtl_res$thres, lty=2:(1:length(rqtl_res$errs)), col="grey")
-    legend("topright", legend=rqtl_res$errs, lty=2:(1:length(rqtl_res$errs)), col="grey")
+    abline(h=rqtl_res$thres, lty=2:(1+length(rqtl_res$errs)), col="grey")
+    legend("topright", legend=rqtl_res$errs, lty=2:(length(rqtl_res$errs)), col="grey")
   }
 }
 
