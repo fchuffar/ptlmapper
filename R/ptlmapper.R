@@ -74,6 +74,10 @@ preprocess_phenodata_rqtl = function(pheno_hists, kanto_analysis=NULL, mmoments_
 #' This function preprocesses genotypes and phenotypes of individuals for R Package QTL. 
 #' @inheritParams preprocess_phenodata_rqtl
 #' @param genodata_ptl The preprocessed genodata. Typically output of `preprocess_genodata` function.
+#' @importFrom qtl jittermap
+#' @importFrom qtl calc.genoprob
+#' @importFrom qtl sim.geno
+#' @importFrom qtl scanone
 #' @export
 preprocess_data_rqtl = function(genodata_ptl, pheno_hists, kanto_analysis=NULL, mmoments_analysis=NULL) {
   bckg = names(pheno_hists)
@@ -539,10 +543,6 @@ kantorovich2D = function(x, y, nbreaks=32, lims=NULL, k1=NULL, k2=NULL) {
 #' @param DO_MMOMENTS A boolean that specifies if `ptl_scan` with method="mmoments" needs to be performed.
 #' @param DO_RQTL A boolean that specifies if `rqtl_launch` needs to be called.
 #' @param CLEAN_OBJECT A boolean that specifies if `ptl_mapping` results needs to be cleaned.
-#' @importFrom qtl jittermap
-#' @importFrom qtl calc.genoprob
-#' @importFrom qtl sim.geno
-#' @importFrom qtl scanone
 #' @export
 ptl_mapping = function(
 genodata, 
