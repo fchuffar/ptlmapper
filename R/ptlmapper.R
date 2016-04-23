@@ -842,8 +842,8 @@ plot_wilks = function(ptl_mapping_result, method="kanto", main="", errs = 0.05, 
   } else {
     cur_ylim=ylim
   }
-  main = paste("PTL score (", method, ")", sep="")
-  plot(0,0, main=main, xlab="markers", ylab="-log10(F)", xaxt='n', col=0,
+  main2 = paste("PTL score (", method, ") ", main, sep="")
+  plot(0,0, main=main2, xlab="markers", ylab="-log10(F)", xaxt='n', col=0,
     xlim=c(min(pa$xs), max(pa$xs)), ylim=cur_ylim, ...)
   for (chr in unique(pa$chrs)) {
     idx = which(pa$chrs == chr)
