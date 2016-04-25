@@ -200,7 +200,7 @@ ptl_scan = function(pheno_matrix, genodata_ptl, nb_perm=0, nb_dim=0, min_prop=0.
       ptl_scan(pheno_matrix, genodata_ptl_filtred, nb_perm=0, nb_dim=test_dim, method=method)
     })
     dim_scan_zscores = sapply(dim_scan, function(d){
-    return(zscore(-log10(d$Ws)))
+      return(zscore(-log10(d$Ws)))
     })
     best_zscore_idx = which(dim_scan_zscores == max(dim_scan_zscores))[1]
     nb_dim = (eig_to_scan)[best_zscore_idx]
@@ -224,7 +224,7 @@ ptl_scan = function(pheno_matrix, genodata_ptl, nb_perm=0, nb_dim=0, min_prop=0.
   # Wilks score for our genodata_ptl_filtred (collect mds WS and cans if needed)
   if (NEED_TO_COMPUTE_MDS_AND_CAN) {      
     if (method == "kanto") {
-      mds = cmdscale(pheno_matrix,nb_dim,eig=TRUE)
+      mds = cmdscale(pheno_matrix, nb_dim, eig=TRUE)
       data = data.frame(mds$points)      
     } else {
       mds = prcomp(pheno_matrix, scale=TRUE)
@@ -398,6 +398,10 @@ zscore = function(dWs, p=0.95) {
   q = quantile(dWs, probs=c(p))
   noise = dWs[dWs<q]
   zscore = (best - mean(noise))/sd(noise)
+  if (is.na(zscore)) {
+    stop("zscore is NA (too small population, perhaps you have to force nb_dim).")
+  }
+  return(zscore)
 }
 
 
