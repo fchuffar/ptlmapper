@@ -272,43 +272,41 @@ get_wilks_score = function(data, all) {
   #  * http://www.philender.com/courses/multivariate/notes2/can1.html
   #  * http://www.philender.com/courses/multivariate/notes3/manova.html
   # NOTE: The score formula is extracted from source code of the candisc package.
-  # seqWilks <- function (eig, p, df.h, df.e) {
-  #   p.full <- length(eig)
-  #   result <- matrix(0, p.full, 4)
-  #   m <- df.e + df.h - ( p.full + df.h + 1)/2
-  #   for (i in seq(p.full)) {
-  #     test <- prod(1/(1 + eig[i:p.full]))
-  #     p <- p.full + 1 - i
-  #     q <- df.h + 1 - i
-  #     s <- p^2 + q^2 - 5
-  #     if (s > 0) {
-  #       s = sqrt(((p * q)^2 - 4)/s)
-  #     } else {
-  #       s = 1
-  #     }
-  #     df1 <- p * q
-  #     df2 <- m * s - (p * q)/2 + 1
-  #     result[i,] <- c(test, ((test^(-1/s) - 1) * (df2/df1)),
-  #       df1, df2)
-  #   }
-  #   result <- cbind(result, pf(result[,2], result[,3], result[,4], lower.tail = FALSE))
-  #   colnames(result) <- c("LR test stat", "approx F", "num Df", "den Df", "Pr(> F)")
-  #   rownames(result) <- 1:p.full
-  #   return(result)
-  # }
+  seqWilks <- function (eig, p, df.h, df.e) {
+    p.full <- length(eig)
+    result <- matrix(0, p.full, 4)
+    m <- df.e + df.h - ( p.full + df.h + 1)/2
+    for (i in seq(p.full)) {
+      test <- prod(1/(1 + eig[i:p.full]))
+      p <- p.full + 1 - i
+      q <- df.h + 1 - i
+      s <- p^2 + q^2 - 5
+      if (s > 0) {
+        s = sqrt(((p * q)^2 - 4)/s)
+      } else {
+        s = 1
+      }
+      df1 <- p * q
+      df2 <- m * s - (p * q)/2 + 1
+      result[i,] <- c(test, ((test^(-1/s) - 1) * (df2/df1)),
+        df1, df2)
+    }
+    result <- cbind(result, pf(result[,2], result[,3], result[,4], lower.tail = FALSE))
+    colnames(result) <- c("LR test stat", "approx F", "num Df", "den Df", "Pr(> F)")
+    rownames(result) <- 1:p.full
+    return(result)
+  }
   data$allele = as.factor(all)
   data = data[!is.na(data$allele),]
   model_formula = paste("cbind(", paste(names(data)[-length(names(data))], collapse=", "), ") ~ allele")
   mod = lm(model_formula, data=data)
-  can = candisc::candisc(mod, data=data)
+  can = candisc(mod, data=data)
   p  = can$rank
   eig = can$eigenvalues[1:p]
-  # df.h =  can$dfh
-  # df.e = can$dfe
-  # tests = seqWilks(eig, p, df.h, df.e)
-  # return(list(W=tests[1,5], can=can, tests=tests))
-  W = prod(1/(1 + eig[1:length(eig)]))
-  return(list(W=W, can=can))
+  df.h =  can$dfh
+  df.e = can$dfe
+  tests = seqWilks(eig, p, df.h, df.e)
+  return(list(W=tests[1,5], can=can))
 }
 
 
@@ -526,7 +524,7 @@ kantorovich2D = function(x, y, nbreaks=32, lims=NULL, k1=NULL, k2=NULL) {
 #' This function is a workflow that encapsulated many functions of the R package `ptlmapper`. 
 #' It aggregates parameter values, inputs and outputs of the call to the R package `ptlmapper` function.
 #' The resulting data structure could be cache on the file system. 
-#' It is useful to massivelly save multiple call to `plt_scan` and `rqtl_launch` function, for example in a complex design.  
+#' It is useful to massivelly save multiple call to `ptl_scan` and `rqtl_launch` function, for example in a complex design.  
 #' @inheritParams preprocess_genodata
 ## #' @param genodata ...
 ## #' @param bckg ...

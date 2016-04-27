@@ -49,6 +49,6 @@ ptl_mapping(genodata, cells, bckg, nb_perm = 20, bin_width = NULL,
 This function is a workflow that encapsulated many functions of the R package `ptlmapper`. 
 It aggregates parameter values, inputs and outputs of the call to the R package `ptlmapper` function.
 The resulting data structure could be cache on the file system. 
-It is useful to massivelly save multiple call to `plt_scan` and `rqtl_launch` function, for example in a complex design.
+It is useful to massivelly save multiple call to `ptl_scan` and `rqtl_launch` function, for example in a complex design.
 }
 
