@@ -52,8 +52,10 @@ preprocess_genodata = function(genodata, bckg) {
 #' @param pheno_hists A list of object containing mean and var attribute. Typically outpout of the `build_pheno_hists` function.
 #' @param kanto_analysis Output of `ptl_scan` function used with the method "kanto".
 #' @param mmoments_analysis Output of `ptl_scan` function used with the method "mmoments". 
+#' @param SKEWNESS_AND_KURTOSIS A boolean that specifies if skewness and kurtosis QTl need to be scanned.
+#' @importFrom moments moment
 #' @export
-preprocess_phenodata_rqtl = function(pheno_hists, kanto_analysis=NULL, mmoments_analysis=NULL) {
+preprocess_phenodata_rqtl = function(pheno_hists, kanto_analysis=NULL, mmoments_analysis=NULL, SKEWNESS_AND_KURTOSIS=FALSE) {
   phenodata_rqtl = sapply(pheno_hists, function(h) {
     c(mean=h$mean, var=h$var)
   })
@@ -64,6 +66,10 @@ preprocess_phenodata_rqtl = function(pheno_hists, kanto_analysis=NULL, mmoments_
   }
   if (!is.null(mmoments_analysis)) {
     phenodata_rqtl$acp1_mm = mmoments_analysis$mds$x[,1]
+  }
+  if (SKEWNESS_AND_KURTOSIS) {
+    # phenodata_rqtl$skewness = moment(pheno_hists$cells, order=3, central=TRUE)
+    # phenodata_rqtl$kurtosis = moment(pheno_hists$cells, order=4, central=TRUE)
   }
   return(phenodata_rqtl)
 }
@@ -79,9 +85,9 @@ preprocess_phenodata_rqtl = function(pheno_hists, kanto_analysis=NULL, mmoments_
 #' @importFrom qtl sim.geno
 #' @importFrom qtl scanone
 #' @export
-preprocess_data_rqtl = function(genodata_ptl, pheno_hists, kanto_analysis=NULL, mmoments_analysis=NULL) {
+preprocess_data_rqtl = function(genodata_ptl, pheno_hists, kanto_analysis=NULL, mmoments_analysis=NULL, SKEWNESS_AND_KURTOSIS=FALSE) {
   bckg = names(pheno_hists)
-  phenodata_rqtl = preprocess_phenodata_rqtl(pheno_hists, kanto_analysis=kanto_analysis, mmoments_analysis=mmoments_analysis)
+  phenodata_rqtl = preprocess_phenodata_rqtl(pheno_hists, kanto_analysis=kanto_analysis, mmoments_analysis=mmoments_analysis, SKEWNESS_AND_KURTOSIS=SKEWNESS_AND_KURTOSIS)
   rqtl_data = list()
   class(rqtl_data) = c("bc", "cross")
   rqtl_data$geno = list()
@@ -137,8 +143,8 @@ extract_axis_info = function(ptl_mapping_result, delta = 0.6) {
 #' @param errs A vector of integer (error) that will be used to compute threshold from the permutation test.
 #' @inheritParams preprocess_phenodata_rqtl
 #' @export
-rqtl_launch = function(genodata_ptl, pheno_hists, kanto_analysis=NULL, mmoments_analysis=NULL, nb_perm=1000, errs=0.05) {
-  rqtl_data = preprocess_data_rqtl(genodata_ptl, pheno_hists, kanto_analysis, mmoments_analysis)
+rqtl_launch = function(genodata_ptl, pheno_hists, kanto_analysis=NULL, mmoments_analysis=NULL, nb_perm=1000, errs=0.05, SKEWNESS_AND_KURTOSIS=FALSE) {
+  rqtl_data = preprocess_data_rqtl(genodata_ptl, pheno_hists, kanto_analysis, mmoments_analysis, SKEWNESS_AND_KURTOSIS=SKEWNESS_AND_KURTOSIS)
   rqtl_data$scan = lapply(1:length(rqtl_data$pheno), function(i) {
     tmp_scan_output = scanone(rqtl_data, method="imp", pheno.col=i)
     nb_perm = max(nb_perm, 1000)
@@ -545,6 +551,7 @@ kantorovich2D = function(x, y, nbreaks=32, lims=NULL, k1=NULL, k2=NULL) {
 #' @param DO_MMOMENTS A boolean that specifies if `ptl_scan` with method="mmoments" needs to be performed.
 #' @param DO_RQTL A boolean that specifies if `rqtl_launch` needs to be called.
 #' @param CLEAN_OBJECT A boolean that specifies if `ptl_mapping` results needs to be cleaned.
+#' @param SKEWNESS_AND_KURTOSIS A boolean that specifies if skewness and kurtosis QTl need to be scanned.
 #' @export
 ptl_mapping = function(
 genodata, 
@@ -563,7 +570,8 @@ COMPUTE_MM_MATRIX=TRUE,
 DO_KANTO=TRUE, 
 DO_MMOMENTS=TRUE, 
 DO_RQTL=TRUE, 
-CLEAN_OBJECT=FALSE
+CLEAN_OBJECT=FALSE,
+SKEWNESS_AND_KURTOSIS=FALSE
 ) {
   
   #################
@@ -634,7 +642,7 @@ CLEAN_OBJECT=FALSE
     #################
     # rqtl_analysis #
     #################
-    rqtl_analysis = rqtl_launch(genodata_ptl, pheno_hists, kanto_analysis, mmoments_analysis, nb_perm=nb_perm, errs=errs)
+    rqtl_analysis = rqtl_launch(genodata_ptl, pheno_hists, kanto_analysis, mmoments_analysis, nb_perm=nb_perm, errs=errs, SKEWNESS_AND_KURTOSIS=SKEWNESS_AND_KURTOSIS)
   } else {
     rqtl_analysis=NULL
   }

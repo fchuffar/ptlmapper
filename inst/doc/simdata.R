@@ -28,11 +28,6 @@ genodata[96:106, 1:7]
 
 ## ----fig.height=6, fig.width=6-------------------------------------------
 tetas = compute_teta(genodata)
-matlab::imagesc(t(as.matrix(genodata)), 
-  main="Parental origin of segregant genomes", 
-  xlab="markers", ylab="segrgants")
-
-## ----fig.height=6, fig.width=6-------------------------------------------
 plot(density(tetas), 
   main=paste("Recombination Fraction Distribution"), 
   xlab=paste("mean(teta)=", signif(mean(tetas),3), sep=""))

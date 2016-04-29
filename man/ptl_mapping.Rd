@@ -8,7 +8,7 @@ ptl_mapping(genodata, cells, bckg, nb_perm = 20, bin_width = NULL,
   nb_dim = 0, errs = 0.05, nb_bin = 100, nb_moments = 4,
   min_prop = 0.1, ptl_mapping_filename = NULL, COMPUTE_KD_MATRIX = TRUE,
   COMPUTE_MM_MATRIX = TRUE, DO_KANTO = TRUE, DO_MMOMENTS = TRUE,
-  DO_RQTL = TRUE, CLEAN_OBJECT = FALSE)
+  DO_RQTL = TRUE, CLEAN_OBJECT = FALSE, SKEWNESS_AND_KURTOSIS = FALSE)
 }
 \arguments{
 \item{genodata}{A matrix describing the genotype of individuals.}
@@ -44,6 +44,8 @@ ptl_mapping(genodata, cells, bckg, nb_perm = 20, bin_width = NULL,
 \item{DO_RQTL}{A boolean that specifies if `rqtl_launch` needs to be called.}
 
 \item{CLEAN_OBJECT}{A boolean that specifies if `ptl_mapping` results needs to be cleaned.}
+
+\item{SKEWNESS_AND_KURTOSIS}{A boolean that specifies if skewness and kurtosis QTl need to be scanned.}
 }
 \description{
 This function is a workflow that encapsulated many functions of the R package `ptlmapper`. 

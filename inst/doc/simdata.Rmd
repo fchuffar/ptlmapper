@@ -125,20 +125,12 @@ Names of columns and rows correspond to the names of individuals and markers, re
 genodata[96:106, 1:7]
 ```
 
-The following figure shows the parental origin of each marker (i.e the genotype at each marker) for each segregant.
-
-```{r,fig.height=6, fig.width=6}
-tetas = compute_teta(genodata)
-matlab::imagesc(t(as.matrix(genodata)), 
-  main="Parental origin of segregant genomes", 
-  xlab="markers", ylab="segrgants")
-```
-
 
 The following plot represents the distribution of the recombination factor (teta) between each pair of consecutive markers. 
 As expected, it is centered on 0.05 (i.e. 5cM).
 
 ```{r,fig.height=6, fig.width=6}
+tetas = compute_teta(genodata)
 plot(density(tetas), 
   main=paste("Recombination Fraction Distribution"), 
   xlab=paste("mean(teta)=", signif(mean(tetas),3), sep=""))

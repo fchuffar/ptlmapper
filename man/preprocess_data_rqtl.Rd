@@ -5,7 +5,7 @@
 \title{A Function That Preprocesses Genotypes and Phenotypes of Individuals for R Package QTL}
 \usage{
 preprocess_data_rqtl(genodata_ptl, pheno_hists, kanto_analysis = NULL,
-  mmoments_analysis = NULL)
+  mmoments_analysis = NULL, SKEWNESS_AND_KURTOSIS = FALSE)
 }
 \arguments{
 \item{genodata_ptl}{The preprocessed genodata. Typically output of `preprocess_genodata` function.}
@@ -15,6 +15,8 @@ preprocess_data_rqtl(genodata_ptl, pheno_hists, kanto_analysis = NULL,
 \item{kanto_analysis}{Output of `ptl_scan` function used with the method "kanto".}
 
 \item{mmoments_analysis}{Output of `ptl_scan` function used with the method "mmoments".}
+
+\item{SKEWNESS_AND_KURTOSIS}{A boolean that specifies if skewness and kurtosis QTl need to be scanned.}
 }
 \description{
 This function preprocesses genotypes and phenotypes of individuals for R Package QTL.

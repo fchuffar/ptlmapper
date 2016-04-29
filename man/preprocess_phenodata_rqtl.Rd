@@ -5,7 +5,7 @@
 \title{A Function That Preprocesses Phenotypes of Individuals for R Package QTL}
 \usage{
 preprocess_phenodata_rqtl(pheno_hists, kanto_analysis = NULL,
-  mmoments_analysis = NULL)
+  mmoments_analysis = NULL, SKEWNESS_AND_KURTOSIS = FALSE)
 }
 \arguments{
 \item{pheno_hists}{A list of object containing mean and var attribute. Typically outpout of the `build_pheno_hists` function.}
@@ -13,6 +13,8 @@ preprocess_phenodata_rqtl(pheno_hists, kanto_analysis = NULL,
 \item{kanto_analysis}{Output of `ptl_scan` function used with the method "kanto".}
 
 \item{mmoments_analysis}{Output of `ptl_scan` function used with the method "mmoments".}
+
+\item{SKEWNESS_AND_KURTOSIS}{A boolean that specifies if skewness and kurtosis QTl need to be scanned.}
 }
 \description{
 This function preprocesses phenotypes of individuals for R Package QTL.
