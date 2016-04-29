@@ -1,10 +1,10 @@
 ---
-title: "A General Method to map Single-cell Probabilistic Trait Loci of the Genome (Simulated Dataset)"
-author: "Florent Chuffart, Magali Richard"
+title: "A General Method to map Single-cell Probabilistic Trait Loci of the Genome (using a simulated dataset)"
+author: "Florent Chuffart, Magali Richard, Gael Yvert"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{A General Method to map Single-cell Probabilistic Trait Loci of the Genome (Simulated Dataset)}
+  %\VignetteIndexEntry{A General Method to map Single-cell Probabilistic Trait Loci of the Genome (using a simulated dataset)}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -15,13 +15,13 @@ vignette: >
 
 ### Dataset
 
-This report presents the analysis of a simulated dataset. 
+This is a tutorial describing how to use ptlmapper. The tutorial is based on the analysis of a simulated dataset. 
 
-The dataset is obtained from a simulator. The implemented model describes the expression of a single gene with positive autoregulation.
-The protein production is controled by the following equation:
+The dataset was generated from a simulator. The implemented model described the expression of a single gene with positive autoregulation.
+Protein production followed the equation:
 \[P = \frac{\alpha_0 + \alpha_1 (\frac{P}{K})^h}{1+(\frac{P}{K})^h}\]
 
-We considere two different genetypic groups, that are characterized by the following sets of parameters:
+We considered two different genotypic groups, that were characterized by the following sets of parameters:
 
 <span style="color:red;">
 \[\left\lbrace
@@ -43,19 +43,19 @@ We considere two different genetypic groups, that are characterized by the follo
 \right.\]
 </span> 
 
-We assume that the set of parameters is controlled by one locus that could exist in two different allelic forms (A and B).
+We assumed that the set of parameters was controlled by one locus that could exist in two different allelic forms (A and B).
 
-For each individual, we generate 20,000 cells according a given set of parameter values. 
+For each individual, we generated 20,000 cells according a given set of parameter values. 
 In addition, we added a universal noise term $n$ to introduce intra-genotype inter-individual varation.
 This correspond to variations of the level of errors on the parameter values.
 
-We considere a panel of individuals and their genotype at 200 markers evenly spaced every 5cM. 
+We considered a panel of individuals and their genotype at 200 markers evenly spaced every 5cM. 
 
-For simplicity, individuals are considered as haploid segregants derived from a cross between two haploids parents of genotype A and B, respectively. 
+For simplicity, individuals were considered as haploid segregants derived from a cross between two haploid parents of genotype A and B, respectively. 
 
-The dataset is freely available as an R package called `ptldata` (https://github.com/fchuffar/ptldata).
+The dataset is available as an R package called `ptldata` (https://github.com/fchuffar/ptldata).
 
-The R package called `ptldata` provides following objects:
+The `ptldata` package contains the following objects:
 
 ```{r}
 library(ptldata)
@@ -63,24 +63,24 @@ indiv = ptldata::indiv
 genodata = ptldata::genodata
 cells = ptldata::cells
 ```
+which are described below.
 
 #### indiv
 
-`indiv` displays the relevant informations on all the simulated individuals. It is a dataframe that contains the description of the 1490
- individuals. It is composed of 1490 rows and 8 variables:
+`indiv` displays relevant information on all individuals. It is a dataframe composed of 1490 rows (individuals) and 8 variables (descriptors):
 
-  * `err`, the value of the error introducted in the paramater selection level.
-  * `all`, the discriminant parental allele origin.
+  * `err`, the value of the error introducted in the paramater selection level. This corresponds to the universal noise term $n$ mentioned above.
+  * `all`, the discriminant parental allele origin (1 = genotype A or 2 = genotype B or 3 = undetermined)
   * `a0`, the a0 parameter value.
   * `a1`, rhe a1 parameter value.
   * `k`, the k parameter value.
-  * `m1`, the first moment of the single cell distribution.
-  * `m2`, the second moment of the single cell distribution.
-  * `m3`, the third moment of the single cell distribution.
+  * `m1`, the first moment of the single cell distribution produced by the simulation.
+  * `m2`, the second moment of the single cell distribution produced by the simulation.
+  * `m3`, the third moment of the single cell distribution produced by the simulation.
 
-The `indiv` rows are named with corresponding individual names.
+Row names are the names of individuals.
 
-In this study, we only focus on individuals that have been generated with a level of error of 0.2 and, for computanial reason we down sample 80 individuals.
+In this tutorial, we only focus on individuals that have been generated with a level of error of 0.2 and, for computational reasons we downsample the data to 80 individuals.
 
 
 ```{r}
@@ -93,12 +93,11 @@ genodata = genodata[,idx]
 head(indiv)
 ```
 
-This picture shows the distribution of the first, second and third moment of the single cells data associated to each individual (grey bars).
-We also color the histograms according to the individual genotype at the locus of interest (allele A in red and allele B in blue). 
+The following figure shows the distribution of the first, second and third moment of the single cells data associated to each individual (grey bars).
+We also color the histograms according to the genotype at the locus of interest (allele A in red and allele B in blue). 
 This corresponds to the discriminant parental allele origin, displayed in the the 'all' variable of the 'indiv' dataframe. 
-The 'all' variable is equal to 1 for allele A, to 2 for allele B and to 3 when the genotype is undetermined. 
 
-We observe that the distributions of the third moment are separated according to individual genotypes.
+We observe that the distributions of the third moment differ according to genotypes.
 
 
 ```{r,fig.height=3, fig.width=9}
@@ -114,21 +113,19 @@ for (m in c("m1","m2","m3")){
 
 #### genodata
 
-`genodata` specifies the genotype of the simulated individuals at the 201 markers that we considere. It is 
-a data frame with 201 rows and 1490 columns whose rows are markers and columns are individuals. The
-marker 101 correspond to the locus controlling the gene expression that we use as phenotypic output.
-The marker 101 is represented by to the 'all' variable of the 'indiv' data
-frame. From this marker 101, the parental genotype is propagated (upstream and downstream) at each marker
+`genodata` specifies the genotype of the simulated individuals at 201 markers. It is 
+a data frame with 201 rows (the markers) and 1490 columns (individuals). Marker 101 corresponds
+to the genotypes matching grous A and B and therefore represents a locus controlling the third moment of the distributions.
+Genotypes at marker 101 is fully correlated with the value of the 'all' variable of the 'indiv' data
+frame. From this marker 101, genotypes at other markers were generated by  propagating (upstream and downstream) the parental genotypes to consecutive markers
 with a recombination factor of 5 (corresponding to 5cM).
-
-The `genodata` columns are named with corresponding individual names.
-The `genodata` rows are named by marker name.
+Names of columns and rows correspond to the names of individuals and markers, respectively.
 
 ```{r}
 genodata[96:106, 1:7]
 ```
 
-The following figure represents the parental origin of each marker (i.e the genotype at each marker) for each segregant.
+The following figure shows the parental origin of each marker (i.e the genotype at each marker) for each segregant.
 
 ```{r,fig.height=6, fig.width=6}
 tetas = compute_teta(genodata)
@@ -138,8 +135,8 @@ matlab::imagesc(t(as.matrix(genodata)),
 ```
 
 
-The following plot represents the distribution of the recombination factor (teta) between each marker. 
-As expected, it is center on 0.05, which corresponds to a distance of 5cM between each marker.
+The following plot represents the distribution of the recombination factor (teta) between each pair of consecutive markers. 
+As expected, it is centered on 0.05 (i.e. 5cM).
 
 ```{r,fig.height=6, fig.width=6}
 plot(density(tetas), 
@@ -150,17 +147,16 @@ abline(v=mean(tetas), lty=2)
 
 #### cells
 
-`cells` emdebs simulated single cell values (phenotypes) obtained for each individuals. 
-It is a list of the 20000 single cell values (phenotype) of the 1490
-individuals described by the variable 'indiv'. It is composed of 1490 items,
-each item is a vector of 20000 integers.
+The `cells` object emdebs simulated single cell trait values obtained for each individual. 
+It is a list of 1490 items (one per individual), each item being a vector of 20000 integers
+which correspond to the quantitative trait values of 20000 cells from that individual.
 
-The `cells` list is named with corresponding individual names.
+The `cells` list is named with the corresponding individual names.
 
 ```{r}
 head(names(cells))
 ```
-This plot figures out the distribution of single cell values for each individual colored according the discriminant parental allele origin.
+This plot shows the distribution of single cell values for each individual colored according the discriminant parental allele origin.
 
 ```{r,fig.width=6, fig.height=6}
 plot(0,0, col=0, xlim=c(-1.5,27), ylim=c(0,0.3), 
@@ -172,19 +168,20 @@ foo = sapply(rownames(indiv), function(i) {
 
 ### Method
 
-The main purpose of this analysis is to present a general method allowing to map Probabilistic Trait Loci (PTL).
-Functions presented here are freely availables in the R package `ptlmapper`.
+The purpose of this tutorial is to present a general method allowing to map single-cell Probabilistic Trait Loci (scPTL).
+Functions presented here are freely available in the R package `ptlmapper`.
 
 ```{r}
 library(ptlmapper)
 ```
 
-This analysis is composed of the following steps:
+This tutorial is composed of the following steps:
 
 #### Analysis of the single cell signal (phenotype)
 
 For each individual, we construct one histogram that is based on the list of single-cell values.
 We obtain a list of histograms (one per individual), that all share the same `breaks` values. 
+Binning can be modified using the bin_width argument.
 
 ```{r}
 pheno_hists = build_pheno_hists(cells, bin_width=1)
@@ -194,7 +191,7 @@ pheno_hists = build_pheno_hists(cells, bin_width=1)
 
 From the list of histograms, we build the Kantorovitch distance matrix. 
 Since Kantorovitch distance between two individuals is computed using their histograms, it is important that the `breaks` values remains identical between individuals.
-This matrix is a symetric distance matrix where columns and rows are named after the corresponding individual.
+This matrix is a symmetric distance matrix where columns and rows are named after the corresponding individuals.
 
 ```{r}
 kd_matrix = build_kd_matrix(pheno_hists)
@@ -205,6 +202,7 @@ kd_matrix[1:6,1:6]
 
 From the list of single cell values stored in the histograms we build the multivariate moments matrix. 
 This matrix is composed of 1 line per individual (named after the individual) and `nb_moment` columns named from `moment_1` to `moment_nb`.
+nb_moment is highest-order moment you want to compute.
 
 ```{r}
 mm_matrix = build_mmoments_matrix(pheno_hists, nb_moment=4)
@@ -213,14 +211,14 @@ head(mm_matrix)
 
 #### Preparation of the genotype
 
-The methods needs an annotated genome to work fine. Here, we add four colums to our genodata data frame: 
+The methods needs an annotated genome to work properly. Here, we add four colums to the genodata dataframe: 
 
   * `prob_name`, the probe name associated to the marker.
   * `chromosome`, the chromosome on which the marker is.
-  * `position`, the position of the marker in the chromosome.
+  * `position`, the position of the marker on the chromosome.
   * `rec_fractions`, the recombination factor associated to the marker.
 
-In `genodata`, "2" stands for undetermined and is replaced by NA.
+In `genodata`, "2" stands for undetermined and is replaced by NA (missing data).
 
 ```{r}
 bckg = names(cells)
@@ -231,16 +229,17 @@ genodata$rec_fractions = 0.05
 genodata_ptl = preprocess_genodata(genodata, bckg)
 ```
 
-#### Perform the ptl mapping using Kantovitch and multivariate moments method
+#### Perform scPTL mapping using Kantorovich and multivariate moments method
 
-The `plt_mapping` function scans genomes to detect PTLs using one of the two methods: `kanto` or `mmoments`. Refers to the publication for more details.
+The `plt_mapping` function scans the genome to detect scPTLs using one of the two methods: `kanto` or `mmoments`. 
+Please refer to publication Chuffart et al. 2016 for more details.
 The common algorithm is the following:
 
 Phenotypes of individuals are described by a vector (PCA on mm_matrix or MDS on kd_matrix).
-The algorithm determines with the Kaiser criterion which dimensions of this orthogonal transformation are relevants for canonical analysis (`eig_to_scan`)
-If `nb_dim=0`, a z-core criterion id used to determine how many dimensions the canonical analysis should use to give the best result. The main purpose is to fixe `nb_dim` in `2:max(eig_to_scan)`.
+The algorithm determines with the Kaiser criterion which dimensions of this orthogonal transformation are relevant for canonical analysis (`eig_to_scan`)
+If `nb_dim=0`, a z-score criterion is used to determine how many dimensions the canonical analysis should use to give the best result. The main purpose is to fixe `nb_dim` in `2:max(eig_to_scan)`.
 If `nb_dim=NULL`, `nb_dim` is automatically set to `max(eig_to_scan)`.
-If `nb_dim>0` the canonical analysis is performed using the provided `nb_dim`. In this two last cases, keep in mind that a high value of `nb_dim` introduces a lot of degree of freedom in your canonical analysis. The number of dimension `nb_dim` needs to be __substantially__ smaller than the size of your population. 
+If `nb_dim>0` the canonical analysis is performed using the provided `nb_dim`. In this two last cases, keep in mind that a high value of `nb_dim` introduces a high degree of freedom in your canonical analysis. The number of dimensions `nb_dim` needs to be __substantially__ smaller than the size of your population. 
 
 ```{r}
 kanto_analysis = ptl_scan(kd_matrix, genodata_ptl, method="kanto")
@@ -249,7 +248,7 @@ mmoments_analysis = ptl_scan(mm_matrix, genodata_ptl, method="mmoments")
 
 #### Perform the qtl mapping using the classic method
 
-The `ptlmapper` package embed features of the famous `qtl` package [Broman et al. (2003)]. It allows to perform classic QTL mapping on univariate criteria (ex: mean, variance) using `ptlmapper` data structures. 
+The `ptlmapper` package embed features of the widely-used `r/qtl` package [Broman et al. (2003)]. It allows to perform classic QTL mapping on univariate criteria (ex: mean, variance) using `ptlmapper` data structures. 
 
 ```{r}
 rqtl_analysis = rqtl_launch(genodata_ptl, pheno_hists, kanto_analysis, mmoments_analysis)
@@ -257,13 +256,11 @@ rqtl_analysis = rqtl_launch(genodata_ptl, pheno_hists, kanto_analysis, mmoments_
 
 ### Workflow
 
-All this steps are embeded in the `ptl_mapping` function. 
+All these steps are embeded in the `ptl_mapping` function. 
 This function is a workflow that aggregates parameter values, inputs, and outputs of the call, to the R package `ptlmapper` function. 
-The resulting data structure could be cache on the file system (using `ptl_mapping_filename` argument of the function). 
-It is particularly useful to massivelly save multiple call to `plt_scan` and `rqtl_launch` function, for example in a complex distributed design adressing many single phenotypes on a given population. 
+The resulting data structure could be cache (i.e. stored in memory) on the file system (using `ptl_mapping_filename` argument of the function). 
+It is particularly useful to massivelly save multiple calls to `plt_scan` and `rqtl_launch` function, for example in a complex distributed design adressing many single phenotypes on a given population. 
 
-```{r, re
-*** pas tres comprehensible *** 
 
 ```{r, results='hide'}
 ptl_mapping_result = ptl_mapping(genodata, cells, bckg, nb_perm=20, bin_width=1)
@@ -272,7 +269,7 @@ ptl_mapping_result = ptl_mapping(genodata, cells, bckg, nb_perm=20, bin_width=1)
 
 ### Result
 
-These results concern univariate phenotype anal;ysis. This figures present genome scanned for mean, var and noise QTL mapping. 
+These results concern univariate phenotype analysis. This figure displays genome scans for mean, var and noise QTL mapping. 
 
 #### QTL
 
@@ -283,21 +280,22 @@ plot_rqtl(ptl_mapping_result, which_pheno=2)
 plot_rqtl(ptl_mapping_result, which_pheno=3)
 ```
 
-#### PTL
+#### scPTL
 
 These results concern multivariate approach with the two methods "kanto" and "mmoments".
 
-##### Kantovitch method
+##### Kantorovich method
 
-The function `get_best_markers_rptl` returns the dtails of marker that obtains the best PTL score according to the `method` used.
+The function `get_best_markers_rptl` returns the details of marker that obtains the best scPTL score according to the `method` used.
 
 ```{r,fig.height=3, fig.width=9}
 best_marker_kanto = get_best_markers_rptl(ptl_mapping_result, method="kanto")
 print(best_marker_kanto)
 ```
-The first figure presents individuals colored according their discriminant parental allele origin in the the two first dimensions of the multidimensional scaling space.
-The second figure shows PTL mapping of the genome according using the "kanto" method.
-On the third figures, details the result of the canonical discriminant analysis for the marker that obtains the best PTL score using the "kanto" method.
+The first figure displays individuals (colored by their genotype at the marker having highest linkage score) in the two first dimensions of the phenotypic space 
+(this space was produced by multidimensional scaling).
+The second figure shows scPTL scan of the genome obtained by using the "kanto" method.
+The third figure displays the phenotypic discrimination produced by the marker that obtains the best PTL score by using the "kanto" method.
 
 
 ```{r,fig.height=3, fig.width=9}
@@ -312,13 +310,15 @@ plot_can(ptl_mapping_result, best_marker_name, col=col, method="kanto")
 
 ##### multivariate moments method
 
+To extract the results obtained by this method, we type:
+
 ```{r,fig.height=3, fig.width=9}
 best_marker_mmoments = get_best_markers_rptl(ptl_mapping_result, method="mmoments")
 print(best_marker_mmoments)
 ```
-The first figure presents individuals colored according their discriminant parental allele origin on the two first components of the PCA.
-The second figure shows PTL mapping of the genome according using the "mmoments" method.
-On the third figures, details the result of the canonical discriminant analysis for the marker that obtains the best PTL score using the "mmoments" method.
+The first figure displays individuals (colored by their genotype at the marker having highest linkage score) along the two first components of the PCA.
+The second figure shows scPTL mapping of the genome obtained by using the "mmoments" method.
+The third figure displays the phenotypic discrimination produced by the marker that obtains the best PTL score by using the "mmoments" method.
 
 ```{r,fig.height=3, fig.width=9}
 layout(matrix(1:3, 1, byrow=TRUE), respect=TRUE)
@@ -335,9 +335,10 @@ plot_can(ptl_mapping_result, best_marker_name, col=col, method="mmoments")
 ## Bibliography
 
   * Broman et al. (2003) R/qtl: QTL mapping in experimental crosses. Bioinformatics 19:889-890
+  * Chuffart et al. (2016) Exploiting single-cell quantitative data to map genetic variants having probabilistic effects. PLoS Genetics
 
 
 
-## Acknowlegment
+## Acknowledgment
 
 We are grateful to the Pole Scientifique de Modelisation Numerique (Lyon, France) and the Grid'5000 experimental testbed (www.grid5000.fr) for computer resource, and the Centre Blaise Pascal of ENS de Lyon for housing the code on a forge. This work was supported by the European Research Council under the European Union's Seventh Framework Programme FP7/2007-2013 [grant SiGHT number 281359].
