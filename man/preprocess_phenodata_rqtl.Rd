@@ -8,7 +8,7 @@ preprocess_phenodata_rqtl(pheno_hists, kanto_analysis = NULL,
   mmoments_analysis = NULL, SKEWNESS_AND_KURTOSIS = FALSE)
 }
 \arguments{
-\item{pheno_hists}{A list of object containing mean and var attribute. Typically outpout of the `build_pheno_hists` function.}
+\item{pheno_hists}{A list of object containing mean and var attributes. Typically, the outpout of the `build_pheno_hists` function.}
 
 \item{kanto_analysis}{Output of `ptl_scan` function used with the method "kanto".}
 

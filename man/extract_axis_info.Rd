@@ -9,7 +9,7 @@ extract_axis_info(ptl_mapping_result, delta = 0.6)
 \arguments{
 \item{ptl_mapping_result}{A `ptl_mapping` data structure.}
 
-\item{delta}{A numeric proportional to the space lets between chromosomes on the x axis.}
+\item{delta}{A numeric proportional to the space between chromosomes on the x axis.}
 }
 \description{
 This function extracts axis information from a 'ptl_mapping' data structure.
