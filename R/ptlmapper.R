@@ -68,8 +68,12 @@ preprocess_phenodata_rqtl = function(pheno_hists, kanto_analysis=NULL, mmoments_
     phenodata_rqtl$acp1_mm = mmoments_analysis$mds$x[,1]
   }
   if (SKEWNESS_AND_KURTOSIS) {
-    # phenodata_rqtl$skewness = moment(pheno_hists$cells, order=3, central=TRUE)
-    # phenodata_rqtl$kurtosis = moment(pheno_hists$cells, order=4, central=TRUE)
+    phenodata_rqtl$skew = sapply(pheno_hists, function(h) {
+      moment(h$cells, order=3, central=TRUE)
+    })
+    phenodata_rqtl$kurt = sapply(pheno_hists, function(h) {
+      moment(h$cells, order=4, central=TRUE)
+    })
   }
   return(phenodata_rqtl)
 }

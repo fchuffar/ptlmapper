@@ -90,7 +90,7 @@ layout(matrix(1:3, 1, byrow=TRUE), respect=TRUE)
 best_marker_name = rownames(best_marker_kanto)[1]
 col = marker2col(ptl_mapping_result, best_marker_name)
 plot_orth_trans(ptl_mapping_result, col=col, method="kanto")
-plot_wilks(ptl_mapping_result, method="kanto")
+plot_wilks(ptl_mapping_result, method="kanto", ylim=c(0,10))
 plot_can(ptl_mapping_result, best_marker_name, col=col, method="kanto")
 
 ## ----fig.height=3, fig.width=9-------------------------------------------
@@ -102,6 +102,6 @@ layout(matrix(1:3, 1, byrow=TRUE), respect=TRUE)
 best_marker_name = rownames(best_marker_mmoments)[1]
 col = marker2col(ptl_mapping_result, best_marker_name)
 plot_orth_trans(ptl_mapping_result, col=col, method="mmoments")
-plot_wilks(ptl_mapping_result, method="mmoments")
+plot_wilks(ptl_mapping_result, method="mmoments", ylim=c(0,10))
 plot_can(ptl_mapping_result, best_marker_name, col=col, method="mmoments")
 
