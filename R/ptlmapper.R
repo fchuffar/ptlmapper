@@ -611,37 +611,34 @@ SKEWNESS_AND_KURTOSIS=FALSE
   } else {
     mm_matrix = NULL
   }
-  
-  if (DO_KANTO | DO_MMOMENTS) {
+
+  if (DO_KANTO | DO_MMOMENTS | DO_RQTL) {
     ################
     # genodata_ptl #
     ################
     genodata_ptl = preprocess_genodata(genodata, bckg)
-
-    ##################
-    # kanto_analysis #
-    ##################
-    if (DO_KANTO) {
-      kanto_analysis = ptl_scan(kd_matrix, genodata_ptl, nb_perm=nb_perm, nb_dim=nb_dim, method="kanto")
-    } else {
-      kanto_analysis=NULL
-    }      
-
-    #####################
-    # mmoments_analysis #
-    #####################
-    if (DO_MMOMENTS) {
-      mmoments_analysis = ptl_scan(mm_matrix, genodata_ptl, nb_perm=nb_perm, nb_dim=nb_dim, method="mmoments")
-    } else {
-      mmoments_analysis=NULL
-    }
-    
   } else {
-    kanto_analysis=NULL
-    mmoments_analysis=NULL
-    genodata_ptl=NULL
+    genodata_ptl=NULL    
   }
   
+  ##################
+  # kanto_analysis #
+  ##################
+  if (DO_KANTO) {
+    kanto_analysis = ptl_scan(kd_matrix, genodata_ptl, nb_perm=nb_perm, nb_dim=nb_dim, method="kanto")
+  } else {
+    kanto_analysis=NULL
+  }      
+
+  #####################
+  # mmoments_analysis #
+  #####################
+  if (DO_MMOMENTS) {
+    mmoments_analysis = ptl_scan(mm_matrix, genodata_ptl, nb_perm=nb_perm, nb_dim=nb_dim, method="mmoments")
+  } else {
+    mmoments_analysis=NULL
+  }
+    
   if (DO_RQTL) {
     #################
     # rqtl_analysis #
