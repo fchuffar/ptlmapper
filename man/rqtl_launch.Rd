@@ -9,9 +9,9 @@ rqtl_launch(genodata_ptl, pheno_hists, kanto_analysis = NULL,
   SKEWNESS_AND_KURTOSIS = FALSE)
 }
 \arguments{
-\item{genodata_ptl}{The preprocessed genodata. Typically output of `preprocess_genodata` function.}
+\item{genodata_ptl}{The preprocessed genodata. Typically, the output of `preprocess_genodata` function.}
 
-\item{pheno_hists}{A list of object containing mean and var attribute. Typically outpout of the `build_pheno_hists` function.}
+\item{pheno_hists}{A list of object containing mean and var attributes. Typically, the outpout of the `build_pheno_hists` function.}
 
 \item{kanto_analysis}{Output of `ptl_scan` function used with the method "kanto".}
 
@@ -24,6 +24,6 @@ rqtl_launch(genodata_ptl, pheno_hists, kanto_analysis = NULL,
 \item{SKEWNESS_AND_KURTOSIS}{A boolean that specifies if skewness and kurtosis QTl need to be scanned.}
 }
 \description{
-This function embed R package `qtl`. It scans genome to detect QTLs using `ptlmapper` data structires.
+This function embeds R package `qtl`. It scans the genome to detect QTLs using `ptlmapper` data structures.
 }
 

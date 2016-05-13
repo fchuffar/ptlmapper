@@ -49,7 +49,7 @@ preprocess_genodata = function(genodata, bckg) {
 #' A Function That Preprocesses Phenotypes of Individuals for R Package QTL
 #'
 #' This function preprocesses phenotypes of individuals for R Package QTL. 
-#' @param pheno_hists A list of object containing mean and var attribute. Typically outpout of the `build_pheno_hists` function.
+#' @param pheno_hists A list of object containing mean and var attributes. Typically, the outpout of the `build_pheno_hists` function.
 #' @param kanto_analysis Output of `ptl_scan` function used with the method "kanto".
 #' @param mmoments_analysis Output of `ptl_scan` function used with the method "mmoments". 
 #' @param SKEWNESS_AND_KURTOSIS A boolean that specifies if skewness and kurtosis QTl need to be scanned.
@@ -83,7 +83,7 @@ preprocess_phenodata_rqtl = function(pheno_hists, kanto_analysis=NULL, mmoments_
 #'
 #' This function preprocesses genotypes and phenotypes of individuals for R Package QTL. 
 #' @inheritParams preprocess_phenodata_rqtl
-#' @param genodata_ptl The preprocessed genodata. Typically output of `preprocess_genodata` function.
+#' @param genodata_ptl The preprocessed genodata. Typically, the output of `preprocess_genodata` function.
 #' @importFrom qtl jittermap
 #' @importFrom qtl calc.genoprob
 #' @importFrom qtl sim.geno
@@ -119,7 +119,7 @@ preprocess_data_rqtl = function(genodata_ptl, pheno_hists, kanto_analysis=NULL, 
 #'
 #' This function extracts axis information from a 'ptl_mapping' data structure. 
 #' @param ptl_mapping_result A `ptl_mapping` data structure.
-#' @param delta A numeric proportional to the space lets between chromosomes on the x axis.
+#' @param delta A numeric proportional to the space between chromosomes on the x axis.
 extract_axis_info = function(ptl_mapping_result, delta = 0.6) {
   sub_genodata = ptl_mapping_result$genodata[ptl_mapping_result$genodata$prob_name %in% rownames(ptl_mapping_result$genodata_ptl),]
   chrs = sub_genodata$chromosome        
@@ -141,8 +141,8 @@ extract_axis_info = function(ptl_mapping_result, delta = 0.6) {
 
 #' A Function That Scans Genome to Detect QTLs (based on R package `qtl`)
 #'
-#' This function embed R package `qtl`. It scans genome to detect QTLs using `ptlmapper` data structires. 
-#' @param genodata_ptl The preprocessed genodata. Typically output of `preprocess_genodata` function.
+#' This function embeds R package `qtl`. It scans the genome to detect QTLs using `ptlmapper` data structures. 
+#' @param genodata_ptl The preprocessed genodata. Typically, the output of `preprocess_genodata` function.
 #' @param nb_perm An integer that specifies the number of permuation to do.
 #' @param errs A vector of integer (error) that will be used to compute threshold from the permutation test.
 #' @inheritParams preprocess_phenodata_rqtl
