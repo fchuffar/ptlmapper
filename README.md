@@ -18,9 +18,8 @@ devtools::install_github("fchuffar/ptlmapper")
 
 To learn on how to use this method, please go to the vignette of the package: 
 
-```R
-browseVignettes("ptlmapper")
-```
+http://graal.ens-lyon.fr/~fchuffart/ptlmapper/inst/doc/simdata.html
+
 
 ## Reference
 
