@@ -1,6 +1,6 @@
 Package: ptlmapper
 Type: Package
-Title: Useful genetic tool allowing to discriminate individuals by comparing the distribution of their phenotype and to map the genetic loci responsible for specific distributions.
+Title: Useful genetic tool allowing to discriminate individuals by comparing the distribution of their phenotype and to map the genetic loci responsible for specific distributions
 Description: This package contains functions that are used to map single-cell Probabilistic Trait Loci (scPTL). The principle of scPTL mapping is to consider a distribution of single-cell traits as the phenotype of a (multicellular) individual, to acquire this phenotype in many individuals, and to scan the genome for DNA variants that change this phenotype.
 Version: 0.0.1.9000
 Date: 2016-03-27

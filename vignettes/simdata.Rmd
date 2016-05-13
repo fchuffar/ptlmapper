@@ -1,6 +1,6 @@
 ---
 title: "A General Method to map Single-cell Probabilistic Trait Loci of the Genome (using a simulated dataset)"
-author: "Florent Chuffart, Magali Richard, Gael Yvert"
+author: "Florent Chuffart, Magali Richard, Daniel Jost, Gael Yvert"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -327,7 +327,7 @@ plot_can(ptl_mapping_result, best_marker_name, col=col, method="mmoments")
 ## Bibliography
 
   * Broman et al. (2003) R/qtl: QTL mapping in experimental crosses. Bioinformatics 19:889-890
-  * Chuffart et al. (2016) Exploiting single-cell quantitative data to map genetic variants having probabilistic effects. PLoS Genetics
+  * Chuffart et al. (2016) Exploiting single-cell quantitative data to map genetic variants having probabilistic effects. PLoS Genetics (in revision)
 
 
 
