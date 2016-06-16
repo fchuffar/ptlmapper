@@ -5,11 +5,12 @@
 #' @param genodata A matrix describing the genotype of individuals.
 #' @param bckg Vector of character describing the individuals as they are describe in genodata.
 #' @param min_prop A numeric specifying the minimal proportion of each parental allele under which a marker is discard from the analysis.
+#' @importFrom stats na.omit
 #' @export
 check_marker_allele_prop = function(genodata, bckg, min_prop=0.1) {
   g = genodata[, bckg]
   kept = apply(g[,bckg], 1, function(col) {
-    nb_ind = length(col)
+    nb_ind = length(na.omit(col))
     inds = as.vector(na.omit(col))
     u_inds = unique(inds)
     for (i in u_inds) {
@@ -119,9 +120,10 @@ preprocess_data_rqtl = function(genodata_ptl, pheno_hists, kanto_analysis=NULL, 
 #'
 #' This function extracts axis information from a 'ptl_mapping' data structure. 
 #' @param ptl_mapping_result A `ptl_mapping` data structure.
+#' @param used_genodata A genodata matrix effectively used to scan ptl.
 #' @param delta A numeric proportional to the space between chromosomes on the x axis.
-extract_axis_info = function(ptl_mapping_result, delta = 0.6) {
-  sub_genodata = ptl_mapping_result$genodata[ptl_mapping_result$genodata$prob_name %in% rownames(ptl_mapping_result$genodata_ptl),]
+extract_axis_info = function(ptl_mapping_result, used_genodata, delta = 0.6) {
+  sub_genodata = ptl_mapping_result$genodata[ptl_mapping_result$genodata$prob_name %in% rownames(used_genodata),]
   chrs = sub_genodata$chromosome        
   xs = unlist(
   lapply(1:length(unique(chrs)), function(i) {
@@ -241,6 +243,46 @@ ptl_scan = function(pheno_matrix, genodata_ptl, nb_perm=0, nb_dim=0, min_prop=0.
       mds$eig = mds$sdev * mds$sdev
       data = data.frame(mds$x[,1:nb_dim])      
     }
+
+    # dim(genodata_ptl)
+    # genodata_ptl_filtred = check_marker_allele_prop(genodata_ptl, bckg, min_prop=min_prop)
+    # dim(genodata_ptl_filtred)
+    #
+    # foo = check_marker_allele_prop(genodata_ptl_filtred, bckg, min_prop=min_prop)
+    # dim(foo)
+    #
+    # g = genodata_ptl_filtred[, bckg]
+    # kept = apply(g[, bckg], 1, function(col) {
+    #     nb_ind = length(col)
+    #     inds = as.vector(na.omit(col))
+    #     u_inds = unique(inds)
+    #     for (i in u_inds) {
+    #         if (sum(inds == i)/nb_ind < min_prop | sum(inds ==
+    #             i)/nb_ind == 1) {
+    #             return(FALSE)
+    #         }
+    #     }
+    #     return(TRUE)
+    # })
+    # sum(!kept)
+    #
+    # foo = apply(genodata_ptl_filtred, 1, function(all) {
+    #
+    #   col = all
+    #   nb_ind = length(na.omit(col))
+    #   print(nb_ind)
+    #   inds = as.vector(na.omit(col))
+    #   u_inds = unique(inds)
+    #   for (i in u_inds) {
+    #       if (sum(inds == i)/nb_ind < min_prop | sum(inds == i)/nb_ind == 1) {
+    #           print(FALSE)
+    #       }
+    #   }
+    #   print(TRUE)
+    #
+    #   get_wilks_score(data, all)
+    # })
+
     foo = apply(genodata_ptl_filtred, 1, function(all) {
       get_wilks_score(data, all)
     })
@@ -276,6 +318,7 @@ ptl_scan = function(pheno_matrix, genodata_ptl, nb_perm=0, nb_dim=0, min_prop=0.
 #' @param data Multivariate coordinates of individuals.
 #' @param all A vector of factors that describes groups of individuals.
 #' @importFrom candisc candisc
+#' @importFrom stats lm
 #' @export
 get_wilks_score = function(data, all) {
   # On the web:
@@ -315,7 +358,32 @@ get_wilks_score = function(data, all) {
   eig = can$eigenvalues[1:p]
   df.h =  can$dfh
   df.e = can$dfe
-  tests = seqWilks(eig, p, df.h, df.e)
+  # tests = seqWilks(eig, p, df.h, df.e)
+  ########## begin seqWilks ############
+  p.full <- length(eig)
+  result <- matrix(0, p.full, 4)
+  m <- df.e + df.h - ( p.full + df.h + 1)/2
+  for (i in seq(p.full)) {
+    test <- prod(1/(1 + eig[i:p.full]))
+    p <- p.full + 1 - i
+    q <- df.h + 1 - i
+    s <- p^2 + q^2 - 5
+    if (s > 0) {
+      s = sqrt(((p * q)^2 - 4)/s)
+    } else {
+      s = 1
+    }
+    df1 <- p * q
+    df2 <- m * s - (p * q)/2 + 1
+    result[i,] <- c(test, ((test^(-1/s) - 1) * (df2/df1)),
+      df1, df2)
+  }
+  result <- cbind(result, pf(result[,2], result[,3], result[,4], lower.tail = FALSE))
+  colnames(result) <- c("LR test stat", "approx F", "num Df", "den Df", "Pr(> F)")
+  rownames(result) <- 1:p.full
+  tests = result
+  ########## end seqWilks ############
+
   return(list(W=tests[1,5], can=can))
 }
 
@@ -373,6 +441,9 @@ build_mmoments_matrix = function(hists, nb_moments=4) {
 #' @param cells A list of vector of integer (single cell values).
 #' @param bin_width An integer specifying the width of the bin to use.
 #' @param nb_bin An integer specifying the number of to use.
+#' @importFrom graphics hist
+#' @importFrom stats var
+#' @importFrom graphics hist
 #' @export
 build_pheno_hists = function(cells, bin_width=NULL, nb_bin=100) {
   r = range(unlist(cells))
@@ -757,7 +828,7 @@ get_best_markers_rptl = function(ptl_mapping_result, chr=NULL, method="kanto") {
     pa = ptl_mapping_result$mmoments_analysis
   }
   if (!is.null(ptl_mapping_result)) {
-    axis_info = extract_axis_info(ptl_mapping_result)    
+    axis_info = extract_axis_info(ptl_mapping_result, pa$genodata)    
   } else {
     stop("ptl_mapping_result is NULL, can't get axis information.")
   }
@@ -842,7 +913,7 @@ plot_wilks = function(ptl_mapping_result, method="kanto", main="", errs = 0.05, 
     pa = ptl_mapping_result$mmoments_analysis
   }
   if (!is.null(ptl_mapping_result)) {
-    axis_info = extract_axis_info(ptl_mapping_result)    
+    axis_info = extract_axis_info(ptl_mapping_result, pa$genodata)    
   } else {
     stop("ptl_mapping_result is NULL, can't get axis information.")
   }
@@ -979,7 +1050,7 @@ plot_empirical_test = function(ptl_mapping_result, main="", errs = c(0.05, 0.01,
   if (!is.null(ptl_mapping_result$kanto_analysis$perm_Ws)) {
     pa = ptl_mapping_result$kanto_analysis
     if (!is.null(ptl_mapping_result)) {
-      axis_info = extract_axis_info(ptl_mapping_result)    
+      axis_info = extract_axis_info(ptl_mapping_result, pa$genodata)    
     } else {
       stop("ptl_mapping_result is NULL, can't get axis information.")
     }

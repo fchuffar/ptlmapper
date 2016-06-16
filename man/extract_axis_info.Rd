@@ -4,10 +4,12 @@
 \alias{extract_axis_info}
 \title{A Function That Extracts Axis Information from a 'ptl_mapping' Data Structure}
 \usage{
-extract_axis_info(ptl_mapping_result, delta = 0.6)
+extract_axis_info(ptl_mapping_result, used_genodata, delta = 0.6)
 }
 \arguments{
 \item{ptl_mapping_result}{A `ptl_mapping` data structure.}
+
+\item{used_genodata}{A genodata matrix effectively used to scan ptl.}
 
 \item{delta}{A numeric proportional to the space between chromosomes on the x axis.}
 }
