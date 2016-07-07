@@ -178,6 +178,8 @@ rqtl_launch = function(genodata_ptl, pheno_hists, kanto_analysis=NULL, mmoments_
 #' @param SHOW_PERM_PROG A boolean specifying if permutation progression need to to report on console.
 #' @param perm_prog_freq An integer specifying the frequency of the permution progression reporting.
 #' @param method A character string in c("kanto", "mmoments") that specify the method to use to characterize phenotypic distribution. Default is our favourite: "kanto"!
+#' @importFrom stats cmdscale
+#' @importFrom stats prcomp
 #' @export
 ptl_scan = function(pheno_matrix, genodata_ptl, nb_perm=0, nb_dim=0, min_prop=0.1, SHOW_PERM_PROG=TRUE, perm_prog_freq=5, method="kanto") {
   # function used to compute the number of significants eigen values
@@ -243,46 +245,6 @@ ptl_scan = function(pheno_matrix, genodata_ptl, nb_perm=0, nb_dim=0, min_prop=0.
       mds$eig = mds$sdev * mds$sdev
       data = data.frame(mds$x[,1:nb_dim])      
     }
-
-    # dim(genodata_ptl)
-    # genodata_ptl_filtred = check_marker_allele_prop(genodata_ptl, bckg, min_prop=min_prop)
-    # dim(genodata_ptl_filtred)
-    #
-    # foo = check_marker_allele_prop(genodata_ptl_filtred, bckg, min_prop=min_prop)
-    # dim(foo)
-    #
-    # g = genodata_ptl_filtred[, bckg]
-    # kept = apply(g[, bckg], 1, function(col) {
-    #     nb_ind = length(col)
-    #     inds = as.vector(na.omit(col))
-    #     u_inds = unique(inds)
-    #     for (i in u_inds) {
-    #         if (sum(inds == i)/nb_ind < min_prop | sum(inds ==
-    #             i)/nb_ind == 1) {
-    #             return(FALSE)
-    #         }
-    #     }
-    #     return(TRUE)
-    # })
-    # sum(!kept)
-    #
-    # foo = apply(genodata_ptl_filtred, 1, function(all) {
-    #
-    #   col = all
-    #   nb_ind = length(na.omit(col))
-    #   print(nb_ind)
-    #   inds = as.vector(na.omit(col))
-    #   u_inds = unique(inds)
-    #   for (i in u_inds) {
-    #       if (sum(inds == i)/nb_ind < min_prop | sum(inds == i)/nb_ind == 1) {
-    #           print(FALSE)
-    #       }
-    #   }
-    #   print(TRUE)
-    #
-    #   get_wilks_score(data, all)
-    # })
-
     foo = apply(genodata_ptl_filtred, 1, function(all) {
       get_wilks_score(data, all)
     })
@@ -319,36 +281,37 @@ ptl_scan = function(pheno_matrix, genodata_ptl, nb_perm=0, nb_dim=0, min_prop=0.
 #' @param all A vector of factors that describes groups of individuals.
 #' @importFrom candisc candisc
 #' @importFrom stats lm
+#' @importFrom stats pf
 #' @export
 get_wilks_score = function(data, all) {
   # On the web:
   #  * http://www.philender.com/courses/multivariate/notes2/can1.html
   #  * http://www.philender.com/courses/multivariate/notes3/manova.html
   # NOTE: The score formula is extracted from source code of the candisc package.
-  seqWilks <- function (eig, p, df.h, df.e) {
-    p.full <- length(eig)
-    result <- matrix(0, p.full, 4)
-    m <- df.e + df.h - ( p.full + df.h + 1)/2
-    for (i in seq(p.full)) {
-      test <- prod(1/(1 + eig[i:p.full]))
-      p <- p.full + 1 - i
-      q <- df.h + 1 - i
-      s <- p^2 + q^2 - 5
-      if (s > 0) {
-        s = sqrt(((p * q)^2 - 4)/s)
-      } else {
-        s = 1
-      }
-      df1 <- p * q
-      df2 <- m * s - (p * q)/2 + 1
-      result[i,] <- c(test, ((test^(-1/s) - 1) * (df2/df1)),
-        df1, df2)
-    }
-    result <- cbind(result, pf(result[,2], result[,3], result[,4], lower.tail = FALSE))
-    colnames(result) <- c("LR test stat", "approx F", "num Df", "den Df", "Pr(> F)")
-    rownames(result) <- 1:p.full
-    return(result)
-  }
+  # seqWilks <- function (eig, p, df.h, df.e) {
+  #   p.full <- length(eig)
+  #   result <- matrix(0, p.full, 4)
+  #   m <- df.e + df.h - ( p.full + df.h + 1)/2
+  #   for (i in seq(p.full)) {
+  #     test <- prod(1/(1 + eig[i:p.full]))
+  #     p <- p.full + 1 - i
+  #     q <- df.h + 1 - i
+  #     s <- p^2 + q^2 - 5
+  #     if (s > 0) {
+  #       s = sqrt(((p * q)^2 - 4)/s)
+  #     } else {
+  #       s = 1
+  #     }
+  #     df1 <- p * q
+  #     df2 <- m * s - (p * q)/2 + 1
+  #     result[i,] <- c(test, ((test^(-1/s) - 1) * (df2/df1)),
+  #       df1, df2)
+  #   }
+  #   result <- cbind(result, pf(result[,2], result[,3], result[,4], lower.tail = FALSE))
+  #   colnames(result) <- c("LR test stat", "approx F", "num Df", "den Df", "Pr(> F)")
+  #   rownames(result) <- 1:p.full
+  #   return(result)
+  # }
   data$allele = as.factor(all)
   data = data[!is.na(data$allele),]
   model_formula = paste("cbind(", paste(names(data)[-length(names(data))], collapse=", "), ") ~ allele")
@@ -471,6 +434,8 @@ build_pheno_hists = function(cells, bin_width=NULL, nb_bin=100) {
 #' @param dWs A vector of numeric.
 #' @param p A numeric that specifies the quantile considered a noise.
 #' @return the z-score 
+#' @importFrom stats quantile
+#' @importFrom stats sd
 #' @export
 zscore = function(dWs, p=0.95) {
   best = max(dWs)
@@ -794,6 +759,9 @@ SKEWNESS_AND_KURTOSIS=FALSE
 #' @param ylim Forcing ylim value of the plot.
 #' @param which_pheno A numeric vector specifying which phenotype we wants to plot.
 #' @param ... Args forward to `plot` function.
+#' @importFrom graphics plot
+#' @importFrom graphics abline
+#' @importFrom graphics legend
 #' @export
 plot_rqtl = function(ptl_mapping_result, main="", ylim=NULL, which_pheno=NULL, ...) {
   if (is.null(which_pheno)) {
@@ -905,6 +873,7 @@ plot_orth_trans = function(ptl_mapping_result, method="kanto", main="", col=NULL
 #' @param ylim Forcing ylim value of the plot.
 #' @param y_thres Forcing thres level on the plot.
 #' @param ... Args forward to `plot` function.
+#' @importFrom stats quantile
 #' @export
 plot_wilks = function(ptl_mapping_result, method="kanto", main="", errs = 0.05, ylim=NULL, y_thres=NULL, ...) {
   if (method == "kanto") {
@@ -925,14 +894,14 @@ plot_wilks = function(ptl_mapping_result, method="kanto", main="", errs = 0.05, 
     cur_ylim=ylim
   }
   main2 = paste("PTL score (", method, ") ", main, sep="")
-  plot(0,0, main=main2, xlab="markers", ylab="-log10(F)", xaxt='n', col=0,
+  plot(0,0, main=main2, xlab="markers", ylab="-log10(F)", xaxt='n', 
     xlim=c(min(pa$xs), max(pa$xs)), ylim=cur_ylim, ...)
   for (chr in unique(pa$chrs)) {
     idx = which(pa$chrs == chr)
     if (length(idx) > 1) {
-      lines(pa$xs[idx], -log10(pa$Ws)[idx], type="l", lw=2)
+      lines(pa$xs[idx], -log10(pa$Ws)[idx], type="l", lw=2, ...)
     } else {
-      points(pa$xs[idx], -log10(pa$Ws)[idx], lw=2)
+      points(pa$xs[idx], -log10(pa$Ws)[idx], lw=2, ...)
     }
   }
   axis(1, at=1:length(unique(pa$chrs)), labels=unique(pa$chrs))
@@ -956,6 +925,9 @@ plot_wilks = function(ptl_mapping_result, method="kanto", main="", errs = 0.05, 
 #' @param marker_name A character string specifying on which marker we are focused. 
 #' @param col Forcing col value of the plot. 
 #' @param ... Args forward to `plot` function.
+#' @importFrom grDevices adjustcolor
+#' @importFrom graphics plot
+#' @importFrom graphics boxplot
 #' @export
 plot_can = function(ptl_mapping_result, marker_name, method="kanto", main="", col=NULL, ...){
   if (method == "kanto") {
@@ -1045,6 +1017,10 @@ get_best_markers_rqtl = function(ptl_mapping_result, which_pheno) {
 #' @param ptl_mapping_result ...
 #' @param main ... 
 #' @param errs ... 
+#' @importFrom graphics points
+#' @importFrom graphics axis
+#' @importFrom graphics abline
+#' @importFrom graphics legend
 #' @export
 plot_empirical_test = function(ptl_mapping_result, main="", errs = c(0.05, 0.01, 0.005)) {
   if (!is.null(ptl_mapping_result$kanto_analysis$perm_Ws)) {
@@ -1104,6 +1080,10 @@ plot_noise = function(ptl_mapping_result, main="", col=NULL){
 #' @param KANTO_DENSITY ... 
 #' @param MEAN_DENSITY ... 
 #' @param ... ...
+#' @importFrom grDevices adjustcolor
+#' @importFrom graphics plot
+#' @importFrom graphics lines
+#' @importFrom stats density
 #' @export
 plot_dist = function(ptl_mapping_result, col=NULL, main="", xlim=NULL, ylim=NULL, only_n_first=0, KANTO_DENSITY=TRUE, MEAN_DENSITY=FALSE, ...){
   h = ptl_mapping_result$pheno_hists

@@ -23,4 +23,4 @@ http://graal.ens-lyon.fr/~fchuffart/ptlmapper/inst/doc/simdata.html
 
 ## Reference
 
-Chuffart F, Richard M, Jost D, Burny C, Duplus-Bottin H, Ohya Y and Yvert G. Exploiting single-cell quantitative data to map genetic variants having probabilistic effects. PLoS Genetics 2016 (in revision)
+Chuffart F, Richard M, Jost D, Burny C, Duplus-Bottin H, Ohya Y and Yvert G. Exploiting single-cell quantitative data to map genetic variants having probabilistic effects. PLoS Genetics 2016 (accepted)

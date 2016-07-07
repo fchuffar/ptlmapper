@@ -1,3 +1,4 @@
 Rprof.out 
 simdata.R
 ^\.travis\.yml$
+.build.timestamp
