@@ -5,7 +5,7 @@
     "codeRepository": "https://github.com/fchuffar/ptlmapper",
     "dateCreated": "2017-12-31",
     "name": "ptlmapper",
-    "description": "dmethr: a 3-step pipeline to explore DNA methylation controlled gene expression from omics data",
+    "description": "This package contains functions that are used to map single-cell Probabilistic Trait Loci (scPTL). The principle of scPTL mapping is to consider a distribution of single-cell traits as the phenotype of a (multicellular) individual, to acquire this phenotype in many individuals, and to scan the genome for DNA variants that change this phenotype.",
     "applicationCategory": "Cellular Biology",
     "programmingLanguage": [
         "R"
