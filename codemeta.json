@@ -1,11 +1,11 @@
 {
     "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
     "@type": "SoftwareSourceCode",
-    "license": "https://spdx.org/licenses/CECILL-2.0",
-    "codeRepository": "https://github.com/bcm-uga/penda",
-    "dateCreated": "2021-08-31",
-    "name": "penda",
-    "description": "The `penda` package provides different method to perform personalized differential analysis.",
+    "license": "https://spdx.org/licenses/GPL-3.0",
+    "codeRepository": "https://github.com/fchuffar/ptlmapper",
+    "dateCreated": "2017-12-31",
+    "name": "ptlmapper",
+    "description": "dmethr: a 3-step pipeline to explore DNA methylation controlled gene expression from omics data",
     "applicationCategory": "Cellular Biology",
     "programmingLanguage": [
         "R"
