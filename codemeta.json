@@ -13,22 +13,13 @@
     "author": [
         {
             "@type": "Person",
-            "givenName": "Malgali",
-            "familyName": "Richard",
-        }
-    ],
-    "author": [
-        {
-            "@type": "Person",
             "givenName": "Florent",
             "familyName": "Chuffart",
-        }
-    ],
-    "author": [
-        {
-            "@type": "Person",
-            "givenName": "Daniel",
-            "familyName": "Jost",
+            "email": "florent.chuffart@gmail.com",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "INSERM"
+            }
         }
     ],
     "author": [
