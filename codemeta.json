@@ -1,32 +1,210 @@
 {
-    "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
-    "@type": "SoftwareSourceCode",
-    "license": "https://spdx.org/licenses/GPL-3.0",
-    "codeRepository": "https://github.com/fchuffar/ptlmapper",
-    "dateCreated": "2017-12-31",
-    "name": "ptlmapper",
-    "description": "This package contains functions that are used to map single-cell Probabilistic Trait Loci (scPTL). The principle of scPTL mapping is to consider a distribution of single-cell traits as the phenotype of a (multicellular) individual, to acquire this phenotype in many individuals, and to scan the genome for DNA variants that change this phenotype.",
-    "applicationCategory": "Cellular Biology",
-    "programmingLanguage": [
-        "R"
-    ],
-    "author": [
+  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+  "@type": "SoftwareSourceCode",
+  "identifier": "ptlmapper",
+  "description": "This package contains functions that are used to map single-cell Probabilistic Trait Loci (scPTL). The principle of scPTL mapping is to consider a distribution of single-cell traits as the phenotype of a (multicellular) individual, to acquire this phenotype in many individuals, and to scan the genome for DNA variants that change this phenotype.",
+  "name": "ptlmapper: Useful genetic tool allowing to discriminate individuals by comparing the distribution of their phenotype and to map the genetic loci responsible for specific distributions",
+  "license": "CeCILL",
+  "version": "0.1.1.9000",
+  "programmingLanguage": {
+    "@type": "ComputerLanguage",
+    "name": "R",
+    "url": "https://r-project.org"
+  },
+  "runtimePlatform": "R version 4.2.0 (2022-04-22)",
+  "author": [
+    {
+      "@type": "Person",
+      "givenName": "Florent",
+      "familyName": "Chuffart",
+      "email": "florent.chuffart@gmail.com"
+    },
+    {
+      "@type": "Person",
+      "givenName": "Magali",
+      "familyName": "Richard",
+      "email": "magali.richard@univ-grenoble-alpes.fr"
+    },
+    {
+      "@type": "Person",
+      "givenName": "Daniel",
+      "familyName": "Jost",
+      "email": "daniel.jost@ens-lyon.fr"
+    },
+    {
+      "@type": "Person",
+      "givenName": "Gael",
+      "familyName": "Yvert",
+      "email": "gael.yvert@ens-lyon.fr"
+    }
+  ],
+  "copyrightHolder": [
+    {
+      "@type": "Organization",
+      "name": "CNRS"
+    }
+  ],
+  "maintainer": [
+    {
+      "@type": "Person",
+      "givenName": "Florent",
+      "familyName": "Chuffart",
+      "email": "florent.chuffart@gmail.com"
+    }
+  ],
+  "softwareSuggestions": [
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "knitr",
+      "name": "knitr",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=knitr"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "rmarkdown",
+      "name": "rmarkdown",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=rmarkdown"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "ptldata",
+      "name": "ptldata"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "matlab",
+      "name": "matlab",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=matlab"
+    }
+  ],
+  "softwareRequirements": {
+    "1": {
+      "@type": "SoftwareApplication",
+      "identifier": "candisc",
+      "name": "candisc",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=candisc"
+    },
+    "2": {
+      "@type": "SoftwareApplication",
+      "identifier": "qtl",
+      "name": "qtl",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=qtl"
+    },
+    "3": {
+      "@type": "SoftwareApplication",
+      "identifier": "moments",
+      "name": "moments",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=moments"
+    },
+    "4": {
+      "@type": "SoftwareApplication",
+      "identifier": "MASS",
+      "name": "MASS",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=MASS"
+    },
+    "5": {
+      "@type": "SoftwareApplication",
+      "identifier": null,
+      "name": null
+    },
+    "SystemRequirements": null
+  },
+  "fileSize": "0KB",
+  "citation": [
+    {
+      "@type": "ScholarlyArticle",
+      "datePublished": "2016",
+      "author": [
         {
-            "@type": "Person",
-            "givenName": "Florent",
-            "familyName": "Chuffart",
-            "email": "florent.chuffart@gmail.com",
-            "affiliation": {
-                "@type": "Organization",
-                "name": "INSERM"
-            }
-        }
-    ],
-    "author": [
+          "@type": "Person",
+          "givenName": "Florent",
+          "familyName": "Chuffart"
+        },
         {
-            "@type": "Person",
-            "givenName": "Gael",
-            "familyName": "Yvert"
+          "@type": "Person",
+          "givenName": "Magali",
+          "familyName": "Richard"
+        },
+        {
+          "@type": "Person",
+          "givenName": "Daniel",
+          "familyName": "Jost"
+        },
+        {
+          "@type": "Person",
+          "givenName": "Claire",
+          "familyName": "Burny"
+        },
+        {
+          "@type": "Person",
+          "givenName": "Helene",
+          "familyName": "Duplus-Bottin"
+        },
+        {
+          "@type": "Person",
+          "givenName": "Yoshikazu",
+          "familyName": "Ohya"
+        },
+        {
+          "@type": "Person",
+          "givenName": "Gael",
+          "familyName": "Yvert"
         }
-    ]
+      ],
+      "name": "Exploiting single-cell quantitative data to map genetic variants having probabilistic effects",
+      "pagination": "accepted",
+      "isPartOf": {
+        "@type": "PublicationIssue",
+        "datePublished": "2016",
+        "isPartOf": {
+          "@type": ["PublicationVolume", "Periodical"],
+          "name": "PloS Genetics"
+        }
+      }
+    }
+  ],
+  "codeRepository": "https://github.com/fchuffar/ptlmapper",
+  "readme": "https://github.com/fchuffar/ptlmapper/blob/master/README.md"
 }

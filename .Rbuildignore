@@ -2,3 +2,4 @@ Rprof.out
 simdata.R
 ^\.travis\.yml$
 .build.timestamp
+^codemeta\.json$
